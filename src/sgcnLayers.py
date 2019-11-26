@@ -1,9 +1,7 @@
 import tensorflow as tf
 
-
-class compEmbeddings():
+class forwardPass():
 	pass
-
 
 class lossOptimize():
 	pass
