@@ -1,19 +1,19 @@
 import tensorflow as tf
 import numpy as np
+tf.logging.set_verbosity(tf.logging.ERROR)
 
-
-def glorot(shape, name=None):
+def glorot(size, name=None):
     """Glorot initialization """
-    limit = np.sqrt(6.0/(shape[0]+shape[1]))
-    initial = tf.random_uniform(shape, minval=-limit, maxval=limit, dtype=tf.float32)
-    return tf.Variable(initial, name=name)
+    limit = np.sqrt(6.0/(size[0]+size[1]))
+    initial = tf.random_uniform(shape=size, minval=-limit, maxval=limit, dtype=tf.float32)
+    return tf.get_variable(name=name, initializer = initial)
 
-def uniform(shape, name, limit=0.05):
+def uniform(size, name, limit=0.05):
     """Uniform initialization of Weights."""
-    initial = tf.random_uniform(shape, minval=-limit, maxval=limit, dtype=tf.float32)
+    initial = tf.random_uniform(shape=size, minval=-limit, maxval=limit, dtype=tf.float32)
     return tf.Variable(initial, name=name)
 
-def zeros(shape, name=None):
+def zeros(size, name=None):
     """All zeros initialization (Not Desirable) """
-    initial = tf.zeros(shape, dtype=tf.float32)
+    initial = tf.zeros(shape=size, dtype=tf.float32)
     return tf.Variable(initial, name=name)
