@@ -21,8 +21,8 @@ class weightSGCN():
 			return zeros(shape, name=name)
 
 	def weightsLayer2N(self, name, variant='glorot'):
-		''' Weights defined for the layers : 3-D Tensor, shape: d_out, 3*d_out, #Layers'''
-		shape = (self.d_out, 3*self.d_out, self.L)
+		''' Weights defined for the layers : 3-D Tensor, shape: #Layers, d_out, 3*d_out, '''
+		shape = (self.L, self.d_out, 3*self.d_out)
 
 		if variant=='glorot':
 			return glorot(shape, name=name)
@@ -81,7 +81,8 @@ if __name__ == "__main__":
 	init = weightSGCN(8, 1000, 30, 10)
 	values = np.zeros((1000, 30))
 
-	W0 = init.weightsLayer1(name="Weights_firstLayer")
+	WU0 = init.weightsLayer1(name="Weights_firstLayer")
+	WB0 = init.weightsLayer1(name="Weights_firstLayer")
 	h0 = init.initialEmbeddings(name="Pre_Generated_Embeddings", values=values)
 	WB = init.weightsLayer2N(name="Weights_Balanced")
 	WU = init.weightsLayer2N(name='Weights_Unbalanced')
@@ -92,7 +93,8 @@ if __name__ == "__main__":
 
 	with tf.Session() as sess:
 		sess.run(init_op)
-		print(sess.run(tf.shape(W0)))
+		print(sess.run(tf.shape(WU0)))
+		print(sess.run(tf.shape(WB0)))
 		print(sess.run(tf.shape(h0)))
 		print(sess.run(tf.shape(WB)))
 		print(sess.run(tf.shape(WU)))
