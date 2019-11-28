@@ -15,6 +15,7 @@ class Layer1():
 		self.hU = hU
 
 	def call(self, inputs, **kwargs):
+		''' Inputs are assumed to be Node Id's ''' 
 
 
 class lossOptimize():
