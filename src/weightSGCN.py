@@ -21,8 +21,8 @@ class weightSGCN():
 			return zeros(shape, name=name)
 
 	def weightsLayer2N(self, name, variant='glorot'):
-		''' Weights defined for the layers : 3-D Tensor, shape: #Layers, d_out, 3*d_out, '''
-		shape = (self.L, self.d_out, 3*self.d_out)
+		''' Weights defined for the layers : 3-D Tensor, shape: #d_out, 3*d_out, Layers '''
+		shape = (self.d_out, 3*self.d_out, self.L)
 
 		if variant=='glorot':
 			return glorot(shape, name=name)
