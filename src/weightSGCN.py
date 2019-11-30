@@ -20,7 +20,7 @@ class weightSGCN():
 		else:
 			return zeros(shape, name=name)
 
-	def weightsLayer2N(self, name, variant='glorot'):
+	def weightsLayer1N(self, name, variant='glorot'):
 		''' Weights defined for the layers : 3-D Tensor, shape: #d_out, 3*d_out, Layers '''
 		shape = (self.d_out, 3*self.d_out, self.L)
 
@@ -76,32 +76,32 @@ class weightSGCN():
 			return zeros(shape, name=name)
 
 
-# if __name__ == "__main__":
-# 	sess = tf.Session() 
-# 	init_op = tf.global_variables_initializer()
-# 	tf.logging.set_verbosity(tf.logging.ERROR)
-# 	init = weightSGCN(8, 1000, 30, 10)
-# 	values = np.zeros((1000, 30))
+if __name__ == "__main__":
+	sess = tf.Session() 
+	init_op = tf.global_variables_initializer()
+	tf.logging.set_verbosity(tf.logging.ERROR)
+	init = weightSGCN(8, 1000, 30, 10)
+	values = np.zeros((1000, 30))
 
-# 	WU0 = init.weightsLayer1(name="Weights_firstLayer")
-# 	WB0 = init.weightsLayer1(name="Weights_firstLayer")
-# 	h0 = init.initialEmbeddings(name="Pre_Generated_Embeddings", values=values)
-# 	WB = init.weightsLayer2N(name="Weights_Balanced")
-# 	WU = init.weightsLayer2N(name='Weights_Unbalanced')
-# 	hB = init.interEmbeddings(name='Embeddings_Balanced')
-# 	hU = init.interEmbeddings(name='Embeddings_Unbalanced')
-# 	zUB = init.Embeddings(name='Concat_Embeddings')
-# 	MLG = init.weightsMLG(name='weights_for_Multinomial_Logistic_Regression')
+	WU0 = init.weightsLayer1(name="Weights_firstLayer")
+	WB0 = init.weightsLayer1(name="Weights_firstLayer")
+	h0 = init.initialEmbeddings(name="Pre_Generated_Embeddings", values=values)
+	WB = init.weightsLayer2N(name="Weights_Balanced")
+	WU = init.weightsLayer2N(name='Weights_Unbalanced')
+	hB = init.interEmbeddings(name='Embeddings_Balanced')
+	hU = init.interEmbeddings(name='Embeddings_Unbalanced')
+	zUB = init.Embeddings(name='Concat_Embeddings')
+	MLG = init.weightsMLG(name='weights_for_Multinomial_Logistic_Regression')
 
-# 	with tf.Session() as sess:
-# 		sess.run(init_op)
-# 		print(sess.run(tf.shape(WU0)))
-# 		print(sess.run(tf.shape(WB0)))
-# 		print(sess.run(tf.shape(h0)))
-# 		print(sess.run(tf.shape(WB)))
-# 		print(sess.run(tf.shape(WU)))
-# 		print(sess.run(tf.shape(hB)))	
-# 		print(sess.run(tf.shape(hU)))
-# 		print(sess.run(tf.shape(zUB)))
-# 		print(sess.run(tf.shape(MLG)))
+	with tf.Session() as sess:
+		sess.run(init_op)
+		print(sess.run(tf.shape(WU0)))
+		print(sess.run(tf.shape(WB0)))
+		print(sess.run(tf.shape(h0)))
+		print(sess.run(tf.shape(WB)))
+		print(sess.run(tf.shape(WU)))
+		print(sess.run(tf.shape(hB)))	
+		print(sess.run(tf.shape(hU)))
+		print(sess.run(tf.shape(zUB)))
+		print(sess.run(tf.shape(MLG)))
 

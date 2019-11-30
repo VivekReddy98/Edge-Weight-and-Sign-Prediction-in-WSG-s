@@ -7,16 +7,16 @@ from src.initialization import *
 class DS():
 	def __init__(self, adj_pos, adj_neg):
 		''' Input Tensors '''
-		self.adj_pos = tf.Variable(adj_pos, name='Adj_Pos')
-		self.adj_neg = tf.Variable(adj_neg, name='Adj_Neg')
+		self.adj_pos = tf.constant(adj_pos, name='Adj_Pos_Static')
+		self.adj_neg = tf.constant(adj_neg, name='Adj_Neg_Static')
 
-		
-class Layer1(tf.keras.layers.Layer):
-	def __init__(self, WU0, WB0, h0, trainable=True, name='Immediate_Neighbours', **kwargs):
-		super(Layer1, self).__init__()
+class Layer0(tf.keras.layers.Layer):
+	def __init__(self, WU0, WB0, h0, trainable=True, name='Immediate_Neighbours_using_precomputed_Embeddings', **kwargs):
+		super(Layer0, self).__init__()
 		self.WU0 = WU0
 		self.WB0 = WB0
 		self.h0 = h0
+		self.name_ = name
 
 	#https://chromium.googlesource.com/external/github.com/tensorflow/tensorflow/+/r0.10/tensorflow/g3doc/how_tos/variable_scope/index.md (Understanding variable scopes)
 	def call(self, inputs, start, end, adj_pos, adj_neg, **kwargs):
@@ -50,52 +50,73 @@ class LayerIntermediate(tf.keras.layers.Layer):
 	def __init__(self, layer_id, trainable=True, **kwargs):
 		super(LayerIntermediate, self).__init__()
 		self.Lid = layer_id
-		self.name_ = "Layer_" + str(self.Lid) + "" + str(layer_id-1) + " :away neighbours" 
+		self.name_ = "Layer_" + str(self.Lid)
 
 	def call(self, h, WB, WU, start, end, d, **kwargs):
-
-		# Lth neighbor information (cause A^2 given information on two-hop neighbours, assuming adj already has L-1 neighbour information)
-		adj_L_pos = tf.matmul(d.adj_pos, d.adj_pos)
-		adj_L_neg = tf.matmul(d.adj_neg, d.adj_neg) 
-
 		''' For Balanced Sets '''
-		h = self.computeEmbeddings(h, WB, start, end, d.adj_pos, adj_L_neg, U=0)
+		h = self.computeEmbeddings(h, WB, start, end, d.adj_pos, d.adj_neg, U=0)
   
 		''' For Unbalanced Sets '''
-		h = self.computeEmbeddings(h, WU, start, end, d.adj_neg, adj_L_pos, U=1)
-
-
+		h = self.computeEmbeddings(h, WU, start, end, d.adj_pos, d.adj_neg, U=1)
 		return h
 
-	def computeEmbeddings(self, h, W, start, end, adj, adj_L, U=0):
+	def computeEmbeddings(self, h, W, start, end, adj_pos, adj_neg, U=0):
 
 		shp_h = tf.shape(h)
 
-		self_embeddings = tf.reshape(tf.slice(h, [start, 0, self.Lid-1, 0], [end-start, tf.shape(h)[1], self.Lid, 1]), [end-start, shp_h[1]]) #shape = b, d_out
-		# From the Embedding matrix of size N, d_out, L, 2, get embeddings of the given layer id of shape N, d_out.
-
-		# L-1 hop Neighbours
-		mask_neigh_L_1 = tf.slice(adj, [start,0], [end-start,tf.shape(adj)[-1]]) # shape = b, N where b = batch_size
-		sum_neigh_L_1 = tf.reduce_sum(mask_neigh_L_1, 1)    # shape = b, 1
-		embeddings_this_layer = tf.reshape(tf.slice(h, [0,0,self.Lid-1,U], [shp_h[0], shp_h[1], self.Lid, 1]), [shp_h[0], shp_h[1]]) # Unbalanced or Balanced based on the value of U
-		sum_embeddings_L_1 = tf.matmul(mask_neigh_L_1, embeddings_this_layer) / tf.reshape(sum_neigh_L_1, (-1, 1)) # shape = b, d_out L-1 hop neighbours 
+		self_embeddings = tf.reshape(tf.slice(h, [start, 0, self.Lid-1, U], [end-start, -1, 1, 1]), [end-start, tf.shape(h)[1]]) #shape = b, d_out
 		
-		# L hop Neighbours
-		mask_neigh_L = tf.slice(adj_L, [start,0], [end-start,tf.shape(adj)[-1]]) # shape = b, N where b = batch_size
-		sum_neigh_L = tf.reduce_sum(mask_neigh_L, 1)    # shape = b, 1
-		embeddings_this_layer = tf.reshape(tf.slice(h, [0,0,self.Lid-1,int(not(U))], [shp_h[0], shp_h[1], self.Lid, 1]), [shp_h[0], shp_h[1]]) # Unbalanced or Balanced based on the value of U
-		sum_embeddings_L = tf.matmul(mask_neigh_L, embeddings_this_layer) / tf.reshape(sum_neigh_L, (-1, 1)) # shape = b, d_out L-1 hop neighbours 
+		# From the Embedding matrix of size N, d_out, L, 2, get embeddings of the given layer id-1 of shape N, d_out.
+
+		# Positive Neighbours, (Balanced or Unbalanced Weights depends on the value of U)
+		mask_neigh_P = tf.slice(adj_pos, [start,0], [end-start,-1]) # shape = b, N where b = batch_size
+		sum_neigh_P = tf.reduce_sum(mask_neigh_P, 1)    # shape = b, 1
+		embeddings_this_layer_P = tf.reshape(tf.slice(h, [0,0,self.Lid-1,U], [-1, -1, 1, 1]), [tf.shape(h)[0], tf.shape(h)[1]]) # Unbalanced or Balanced based on the value of U
+		sum_embeddings_P = tf.matmul(mask_neigh_P, embeddings_this_layer_P) / tf.reshape(sum_neigh_P, (-1, 1)) # shape = b, d_out 
+		
+		# Negative Neighbours, (Balanced or Unbalanced Weights depends on the value of U)
+		mask_neigh_N = tf.slice(adj_neg, [start,0], [end-start,-1]) # shape = b, N where b = batch_size
+		sum_neigh_N = tf.reduce_sum(mask_neigh_N, 1)    # shape = b, 1
+		embeddings_this_layer_N = tf.reshape(tf.slice(h, [0,0,self.Lid-1,int(not(U))], [-1, -1, 1, 1]), [tf.shape(h)[0], tf.shape(h)[1]]) # Unbalanced or Balanced based on the value of U
+		sum_embeddings_N = tf.matmul(mask_neigh_N, embeddings_this_layer_N) / tf.reshape(sum_neigh_N, (-1, 1)) # shape = b, d_out
 
 		# Concat the found vectors
-		concat_vector = tf.concat([sum_embeddings_L_1, sum_embeddings_L, self_embeddings], 1) #shape = b, 3*d_out
+		concat_vector = tf.concat([sum_embeddings_P, sum_embeddings_N, self_embeddings], 1) #shape = b, 3*d_out
 		
 		# Get the Weights Corresponding to this layer 
-		sliced_weights = tf.reshape(tf.slice(W, [0, 0, self.Lid-1], [tf.shape(W)[0], tf.shape(W)[1], self.Lid]), [tf.shape(W)[0], tf.shape(W)[1]])
+		sliced_weights = tf.reshape(tf.slice(W, [0, 0, self.Lid-1], [-1, -1, 1]), [tf.shape(W)[0], tf.shape(W)[1]])
 		
 		tensor = h[start:end, :, 0, 0].assign(tf.nn.relu(tf.matmul(concat_vector, sliced_weights, transpose_b=True))) #shape = b, 3*d_out 
 		tensor.eval()
 		h.assign(tensor)
 		return h
+
+class LayerLast(tf.keras.layers.Layer):
+	def __init__(self, layer_id):
+		super(LayerLast, self).__init__()
+		self.Lid = layer_id
+		self.name_ = "End Layer_" + str(self.Lid)
+
+	def call(self, h, zUB, **kwargs):
+		z_B = tf.reshape(tf.slice(h, [0, 0, self.Lid, 0], [-1, -1, 1, 1]), [tf.shape(h)[0], tf.shape(h)[1]])
+		z_U = tf.reshape(tf.slice(h, [0, 0, self.Lid, 1], [-1, -1, 1, 1]), [tf.shape(h)[0], tf.shape(h)[1]])
+		zUB = tf.concat([z_B, z_U], axis=1)
+		return zUB
+
+
+if __name__ != "__main__":
+	tf.reset_default_graph()
+
+	a_new = np.reshape(np.arange(60), (5,2,3,2))
+	a = tf.Variable(a_new)
+	y = tf.slice(a, [0,0,2,0], [-1,-1,1,1])
+
+	with tf.Session() as sess:
+		sess.run(tf.global_variables_initializer())
+		result = sess.run(a)
+		print(result.shape)
+		result2 = sess.run(y)
+		print(result2.shape)
 
 
 if __name__ == "__main__":
@@ -104,7 +125,7 @@ if __name__ == "__main__":
 
 	with tf.Session() as sess:
 	
-		init = weightSGCN(2, 5, 5, 2)
+		init = weightSGCN(3, 5, 5, 2)
 		values = np.ones((5, 5))
 		values = values.astype('float32')
 
@@ -112,8 +133,8 @@ if __name__ == "__main__":
 		WB0 = init.weightsLayer1(name="Weights_firstLayer_balanced")
 		h0 = init.initialEmbeddings(name="Pre_Generated_Embeddings", values=values)
 
-		WB = init.weightsLayer2N(name="Weights_Balanced")
-		WU = init.weightsLayer2N(name='Weights_Unbalanced')
+		WB = init.weightsLayer1N(name="Weights_Balanced")
+		WU = init.weightsLayer1N(name='Weights_Unbalanced')
 		h = init.interEmbeddings(name='Embeddings_B_UB')
 		zUB = init.Embeddings(name='Concat_Embeddings')
 		MLG = init.weightsMLG(name='weights_for_Multinomial_Logistic_Regression')
@@ -125,33 +146,38 @@ if __name__ == "__main__":
 
 		sess.run(tf.global_variables_initializer())
 
-		for i in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='some_scope'):
-			print(i)   # i.name if you want just a name
-
-		L0 = Layer1(WU0, WB0, h0)
 		a = h.eval()
-		#print(a)
-		print("..........................................................")
+
+		print("........................First Layer...................................")
+		L0 = Layer0(WU0, WB0, h0)
+		print(L0.name_)
 		sess.run(L0.call(h, 0, 5, d.adj_pos, d.adj_neg))
 		b = h.eval()
-		adj_p = d.adj_pos.eval()
-		adj_n = d.adj_neg.eval()
-		print("Adj_Matrices after first Layer: \n")
-		print(adj_p, adj_n)
-		print("..........................Intermediate Layers..........................")
+		
+		print("..........................Intermediate Layer 1..........................")
+		
 		L1 = LayerIntermediate(1)
 		print(L1.name_)
 		sess.run(L1.call(h, WB, WU, 0, 5, d))
-		c = h.eval()
-		print("Scores of h: ")
-		print(np.nansum(a), np.nansum(b), np.nansum(c))
 
-		print("Adj_Matrices after intermediate Layer")
-		d.adj_pos = tf.matmul(d.adj_pos, d.adj_pos)
-		d.adj_neg = tf.matmul(d.adj_neg, d.adj_neg)
-		adj_p = d.adj_pos.eval()
-		adj_n = d.adj_neg.eval()
-		print(adj_p, adj_n)
+		print("..........................Intermediate Layer 2..........................")
+
+		L2 = LayerIntermediate(2)
+		print(L2.name_)
+		sess.run(L2.call(h, WB, WU, 0, 5, d))
+		c = h.eval()
+
+		print("..........................Final Layer..........................")
+		L3 = LayerLast(2)
+		print(L3.name_)
+		sess.run(L3.call(h, zUB))
+		g = zUB.eval()
+		print("Shape of zUB is {}".format(tf.shape(zUB)))
+
+
+		print("..........................Correctness Checking..........................")
+		print("Scores of h: ")
+		print(np.nansum(a), np.nansum(b), np.nansum(c), np.nansum(g), np.shape(g))
 
 
 
