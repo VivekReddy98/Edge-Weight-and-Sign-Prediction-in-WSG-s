@@ -11,22 +11,24 @@ class DS():
 		self.adj_neg = tf.constant(adj_neg, name='Adj_Neg_Static')
 
 class Layer0(tf.keras.layers.Layer):
-	def __init__(self, WU0, WB0, h0, trainable=True, name='Immediate_Neighbours_using_precomputed_Embeddings', **kwargs):
+	def __init__(self, WU0, WB0, h0, name='Immediate_Neighbours_using_precomputed_Embeddings', **kwargs):
 		super(Layer0, self).__init__()
 		self.WU0 = WU0
 		self.WB0 = WB0
 		self.h0 = h0
 		self.name_ = name
+		self.adj_pos = adj_pos
+		self.adj_neg = adj_neg
 
 	#https://chromium.googlesource.com/external/github.com/tensorflow/tensorflow/+/r0.10/tensorflow/g3doc/how_tos/variable_scope/index.md (Understanding variable scopes)
-	def call(self, inputs, start, end, adj_pos, adj_neg, **kwargs):
+	def call(self, inputs, start, end, **kwargs):
 		''' Inputs are assumed to be Node Id's given as a 1-d list of form [[]]''' 
 		''' kwargs should have two adj_matrices, with in and out nodes information '''
 		''' ds object having all the required matrices '''
 
 		self_vectors = tf.slice(self.h0, [start, 0], [end-start, tf.shape(self.h0)[-1]]) #shape = b, d_in
 		''' For Balanced Sets '''
-		mask_pos_neigh = tf.slice(adj_pos, [start,0], [end-start,tf.shape(adj_pos)[-1]]) # shape = b, N where b = batch_size
+		mask_pos_neigh = tf.slice(self.adj_pos, [start,0], [end-start,tf.shape(adj_pos)[-1]]) # shape = b, N where b = batch_size
 		sum_neigh = tf.reduce_sum(mask_pos_neigh, 1)    # shape = b, 1
 		sum_pos_vectors = tf.matmul(mask_pos_neigh, self.h0, transpose_b=False) # shape = b, d_in
 		sum_pos_vectors = sum_pos_vectors / tf.reshape(sum_neigh, (-1, 1)) # Shape = b, d_in
@@ -36,7 +38,7 @@ class Layer0(tf.keras.layers.Layer):
 		inputs.assign(tensor)
   
 		''' For Unbalanced Sets '''
-		mask_neg_neigh = tf.slice(adj_neg, [start,0], [end-start,tf.shape(adj_neg)[-1]]) # shape = b, N where b = batch_size
+		mask_neg_neigh = tf.slice(self.adj_neg, [start,0], [end-start,tf.shape(adj_neg)[-1]]) # shape = b, N where b = batch_size
 		sum_neigh = tf.reduce_sum(mask_neg_neigh, 1)    # shape = b, 1
 		sum_neg_vectors = tf.matmul(mask_neg_neigh, self.h0, transpose_b=False) # shape = b, d_in
 		sum_neg_vectors = sum_neg_vectors / tf.reshape(sum_neigh, (-1, 1)) # Shape = b, d_in
@@ -47,17 +49,22 @@ class Layer0(tf.keras.layers.Layer):
 		return inputs
 
 class LayerIntermediate(tf.keras.layers.Layer):
-	def __init__(self, layer_id, trainable=True, **kwargs):
+	def __init__(self, layer_id, WB, WU, adj_pos, adj_neg, **kwargs):
 		super(LayerIntermediate, self).__init__()
 		self.Lid = layer_id
 		self.name_ = "Layer_" + str(self.Lid)
+		self.WB = WB
+		self.WU = WU
+		self.adj_pos = adj_pos
+		self.adj_neg = adj_neg
 
-	def call(self, h, WB, WU, start, end, d, **kwargs):
+
+	def call(self, h, start, end, **kwargs):
 		''' For Balanced Sets '''
-		h = self.computeEmbeddings(h, WB, start, end, d.adj_pos, d.adj_neg, U=0)
+		h = self.computeEmbeddings(h, self.WB, start, end, self.adj_pos, self.adj_neg, U=0)
   
 		''' For Unbalanced Sets '''
-		h = self.computeEmbeddings(h, WU, start, end, d.adj_pos, d.adj_neg, U=1)
+		h = self.computeEmbeddings(h, self.WU, start, end, self.adj_pos, self.adj_neg, U=1)
 		return h
 
 	def computeEmbeddings(self, h, W, start, end, adj_pos, adj_neg, U=0):
@@ -97,12 +104,11 @@ class LayerLast(tf.keras.layers.Layer):
 		self.Lid = layer_id
 		self.name_ = "End Layer_" + str(self.Lid)
 
-	def call(self, h, zUB, **kwargs):
+	def call(self, h, **kwargs):
 		z_B = tf.reshape(tf.slice(h, [0, 0, self.Lid, 0], [-1, -1, 1, 1]), [tf.shape(h)[0], tf.shape(h)[1]])
 		z_U = tf.reshape(tf.slice(h, [0, 0, self.Lid, 1], [-1, -1, 1, 1]), [tf.shape(h)[0], tf.shape(h)[1]])
 		zUB = tf.concat([z_B, z_U], axis=1)
 		return zUB
-
 
 if __name__ != "__main__":
 	tf.reset_default_graph()
@@ -118,10 +124,7 @@ if __name__ != "__main__":
 		result2 = sess.run(y)
 		print(result2.shape)
 
-
 if __name__ == "__main__":
-
-	tf.reset_default_graph()
 
 	with tf.Session() as sess:
 	
