@@ -173,7 +173,7 @@ if __name__ == "__main__":
 		print("..........................Final Layer..........................")
 		L3 = LayerLast(2)
 		print(L3.name_)
-		sess.run(L3.call(h, zUB))
+		sess.run(L3.call(h))
 		g = zUB.eval()
 		print("Shape of zUB is {}".format(tf.shape(zUB)))
 
@@ -181,6 +181,7 @@ if __name__ == "__main__":
 		print("..........................Correctness Checking..........................")
 		print("Scores of h: ")
 		print(np.nansum(a), np.nansum(b), np.nansum(c), np.nansum(g), np.shape(g))
+		writer = tf.summary.FileWriter(os.getenv['STORE_PATH'], zUB)
 
 
 
