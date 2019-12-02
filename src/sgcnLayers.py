@@ -11,7 +11,7 @@ class DS():
 		self.adj_neg = tf.constant(adj_neg, name='Adj_Neg_Static')
 
 class Layer0(tf.keras.layers.Layer):
-	def __init__(self, WU0, WB0, h0, name='Immediate_Neighbours_using_precomputed_Embeddings', **kwargs):
+	def __init__(self, WU0, WB0, h0, adj_pos, adj_neg, name='Immediate_Neighbours_using_precomputed_Embeddings', **kwargs):
 		super(Layer0, self).__init__()
 		self.WU0 = WU0
 		self.WB0 = WB0
@@ -110,19 +110,19 @@ class LayerLast(tf.keras.layers.Layer):
 		zUB = tf.concat([z_B, z_U], axis=1)
 		return zUB
 
-if __name__ != "__main__":
-	tf.reset_default_graph()
+# if __name__ != "__main__":
+# 	tf.reset_default_graph()
 
-	a_new = np.reshape(np.arange(60), (5,2,3,2))
-	a = tf.Variable(a_new)
-	y = tf.slice(a, [0,0,2,0], [-1,-1,1,1])
+# 	a_new = np.reshape(np.arange(60), (5,2,3,2))
+# 	a = tf.Variable(a_new)
+# 	y = tf.slice(a, [0,0,2,0], [-1,-1,1,1])
 
-	with tf.Session() as sess:
-		sess.run(tf.global_variables_initializer())
-		result = sess.run(a)
-		print(result.shape)
-		result2 = sess.run(y)
-		print(result2.shape)
+# 	with tf.Session() as sess:
+# 		sess.run(tf.global_variables_initializer())
+# 		result = sess.run(a)
+# 		print(result.shape)
+# 		result2 = sess.run(y)
+# 		print(result2.shape)
 
 if __name__ == "__main__":
 
@@ -152,22 +152,22 @@ if __name__ == "__main__":
 		a = h.eval()
 
 		print("........................First Layer...................................")
-		L0 = Layer0(WU0, WB0, h0)
+		L0 = Layer0(WU0, WB0, h0, d.adj_pos, d.adj_neg)
 		print(L0.name_)
-		sess.run(L0.call(h, 0, 5, d.adj_pos, d.adj_neg))
+		sess.run(L0.call(h, 0, 5))
 		b = h.eval()
 		
 		print("..........................Intermediate Layer 1..........................")
 		
 		L1 = LayerIntermediate(1)
 		print(L1.name_)
-		sess.run(L1.call(h, WB, WU, 0, 5, d))
+		sess.run(L1.call(h, WB, WU, 0, 5, d.adj_pos, d.adj_neg))
 
 		print("..........................Intermediate Layer 2..........................")
 
 		L2 = LayerIntermediate(2)
 		print(L2.name_)
-		sess.run(L2.call(h, WB, WU, 0, 5, d))
+		sess.run(L2.call(h, WB, WU, 0, 5, d.adj_pos, d.adj_neg))
 		c = h.eval()
 
 		print("..........................Final Layer..........................")
