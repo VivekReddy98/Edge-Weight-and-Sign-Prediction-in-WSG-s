@@ -159,15 +159,15 @@ if __name__ == "__main__":
 		
 		print("..........................Intermediate Layer 1..........................")
 		
-		L1 = LayerIntermediate(1)
+		L1 = LayerIntermediate(1, WB, WU, d.adj_pos, d.adj_neg)
 		print(L1.name_)
-		sess.run(L1.call(h, WB, WU, 0, 5, d.adj_pos, d.adj_neg))
+		sess.run(L1.call(h, 0, 5))
 
 		print("..........................Intermediate Layer 2..........................")
 
-		L2 = LayerIntermediate(2)
+		L2 = LayerIntermediate(2, WB, WU, d.adj_pos, d.adj_neg)
 		print(L2.name_)
-		sess.run(L2.call(h, WB, WU, 0, 5, d.adj_pos, d.adj_neg))
+		sess.run(L2.call(h, 0, 5))
 		c = h.eval()
 
 		print("..........................Final Layer..........................")
