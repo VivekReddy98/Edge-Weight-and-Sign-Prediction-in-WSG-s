@@ -11,12 +11,12 @@ class DS():
 		self.adj_neg = tf.constant(adj_neg, name='Adj_Neg_Static')
 
 class Layer0(tf.keras.layers.Layer):
-	def __init__(self, WU0, WB0, h0, adj_pos, adj_neg, name='Immediate_Neighbours_using_precomputed_Embeddings', **kwargs):
+	def __init__(self, WU0, WB0, h0, adj_pos, adj_neg, **kwargs):
 		super(Layer0, self).__init__()
 		self.WU0 = WU0
 		self.WB0 = WB0
 		self.h0 = h0
-		self.name_ = name
+		self.name_ = 'Immediate_Neighbours_using_precomputed_Embeddings'
 		self.adj_pos = adj_pos
 		self.adj_neg = adj_neg
 
