@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-import sys
+import sys. os
 from src.weightSGCN import weightSGCN
 from src.initialization import *
 
@@ -180,9 +180,4 @@ if __name__ == "__main__":
 
 		print("..........................Correctness Checking..........................")
 		print("Scores of h: ")
-		print(np.nansum(a), np.nansum(b), np.nansum(c), np.nansum(g), np.shape(g))
-		writer = tf.summary.FileWriter(os.getenv['STORE_PATH'], zUB)
-
-
-
-		
+		print(np.nansum(a), np.nansum(b), np.nansum(c), np.nansum(g), np.shape(g))	

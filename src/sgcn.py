@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+from itertools import cycle
 from src.weightSGCN import weightSGCN
 from src.initialization import *
 from src.sgcnLayers import DS, Layer0, LayerIntermediate, LayerLast
@@ -7,6 +8,38 @@ from src.sgcnLayers import DS, Layer0, LayerIntermediate, LayerLast
 # Ref Code: https://github.com/tkipf/gcn/blob/master/gcn/models.py
 # outs = sess.run([model.opt_op, model.loss, model.accuracy], feed_dict=feed_dict)
 # Ref Code: https://github.com/tkipf/gcn/blob/master/gcn/train.py
+
+
+class dataGen:
+	def __init__(self, batch_size, N):
+		self.BS = batch_size
+		self.N = N
+		self.i=0
+
+	def batchIterator(self):
+		while (self.i+self.BS) < self.N:
+			self.i = self.i+self.BS
+			yield (self.i-self.BS, self.i)
+		yield (self.i, self.N-1)
+
+	def gen(self):
+		a = self.batchIterator()
+		while True:
+			try:
+				yield next(a)
+			except:
+				self.i=0
+				a = self.batchIterator()
+
+def pairGenerator(dataGen):
+	def __init__(self, batch_size=256, epochs, adj_pos, adj_neg):
+		self.BS = batch_size
+		self.i = 0
+		self.N = adj_neg.shape[0]
+		self.adj_neg = adj_neg
+		self.adj_pos = adj_pos
+
+
 class sgcn():
 	def __init__(self, **kwargs):
 
@@ -40,6 +73,17 @@ class sgcn():
 		h = self.L3(h, start, end)
 		zUB = self.L4(h, start, end)
 		return zUB
+
+	
+
+
+
+
+	
+
+
+
+
 
 	def _loss(self):
 		pass
