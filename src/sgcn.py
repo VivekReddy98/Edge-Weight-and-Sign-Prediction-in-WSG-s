@@ -4,32 +4,11 @@ from itertools import cycle
 from src.weightSGCN import weightSGCN
 from src.initialization import *
 from src.sgcnLayers import DS, Layer0, LayerIntermediate, LayerLast
+from src.generatorUtils import parseInput, pairGenerator, dataGen
 
 # Ref Code: https://github.com/tkipf/gcn/blob/master/gcn/models.py
 # outs = sess.run([model.opt_op, model.loss, model.accuracy], feed_dict=feed_dict)
 # Ref Code: https://github.com/tkipf/gcn/blob/master/gcn/train.py
-
-
-class dataGen:
-	def __init__(self, batch_size, N):
-		self.BS = batch_size
-		self.N = N
-		self.i=0
-
-	def batchIterator(self):
-		while (self.i+self.BS) < self.N:
-			self.i = self.i+self.BS
-			yield (self.i-self.BS, self.i)
-		yield (self.i, self.N-1)
-
-	def gen(self):
-		a = self.batchIterator()
-		while True:
-			try:
-				yield next(a)
-			except:
-				self.i=0
-				a = self.batchIterator()
 
 def pairGenerator(dataGen):
 	def __init__(self, batch_size=256, epochs, adj_pos, adj_neg):
@@ -42,24 +21,34 @@ def pairGenerator(dataGen):
 
 class sgcn():
 	def __init__(self, **kwargs):
-
+		
 		self.Layers = []
-		self.loss = 0
+		
+		''' Defined as Placeholders as the values in them might change depending on the batch'''
+		self.twins = tf.placeholder(tf.float32)
+		self.one_hot_encode = tf.placeholder(tf.float32)
+		self.pos_triplets = tf.placeholder(tf.float32)
+		self.neg_triplets = tf.placeholder(tf.float32)
+		self.start = tf.placeholder(tf.float32)
+		self.end = tf.placeholder(tf.float32)
+
+		''' Optimizer and Loss Defined '''
 		self.optimizer = tf.train.AdamOptimizer(learning_rate=kwargs['learning_rate'])
+		self.loss = 0
 		self.opt_op = self.optimizer.minimize(self.loss)
-		self.build(kwargs['num_L'], kwargs['adj_pos'], kwargs['adj_neg'], kwargs['d_out'], kwargs['values'])
+
+		#self.build(kwargs['num_L'], kwargs['adj_pos'], kwargs['adj_neg'], kwargs['d_out'], kwargs['values'])
 
 	def build(self, num_L, adj_pos, adj_neg, d_out, values):
 		''' Values should be of type float32 ''' 
 		init = weightSGCN(num_L, values.shape[0], values.shape[1], d_out)
-
 		WU0 = init.weightsLayer1(name="Weights_firstLayer_unbalanced")
 		WB0 = init.weightsLayer1(name="Weights_firstLayer_balanced")
 		h0 = init.initialEmbeddings(name="Pre_Generated_Embeddings", values=values)
 		WB = init.weightsLayer1N(name="Weights_Balanced")
 		WU = init.weightsLayer1N(name='Weights_Unbalanced')
-		zUB = init.Embeddings(name='Concat_Embeddings')
-		MLG = init.weightsMLG(name='weights_for_Multinomial_Logistic_Regression')
+		self.zUB = init.Embeddings(name='Concat_Embeddings')
+		self.MLG = init.weightsMLG(name='weights_for_Multinomial_Logistic_Regression')
 		self.Layers.append(Layer0(WU0, WB0, h0))
 		for i in range(1,num_L):
 			self.Layers.append(LayerIntermediate(i, WB, WU, adj_pos, adj_neg))
@@ -67,25 +56,13 @@ class sgcn():
 		return None
 
 	def predict(self, h, start, end):
-		h = self.L0(h, start, end)
-		h = self.L1(h, start, end)
-		h = self.L2(h, start, end)
-		h = self.L3(h, start, end)
-		zUB = self.L4(h, start, end)
+		for index in range(0,self.Layers-1):
+			h = self.Layers[index].call(h, start, end)
+		self.zUB = self.Layers[-1].call(h)
 		return zUB
 
-	
-
-
-
-
-	
-
-
-
-
-
-	def _loss(self):
+	def MLGloss(self):
+		
 		pass
 
 

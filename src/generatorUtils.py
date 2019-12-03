@@ -92,10 +92,9 @@ class pairGenerator():
 			df_M_plus = df_pos.sample(frac=0.1).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/3)
 			df_M_minus = df_neg.sample(frac=0.1).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/3)
 
-			feed_dict = {"twins":df_twins, "pos_triplets": df_M_plus, "neg_triplets": df_M_minus}
+			feed_dict = {"twins":df_twins, "pos_triplets": df_M_plus, "neg_triplets": df_M_minus, "range": (start, end)}
 			yield feed_dict
 			break
-
 
 
 if __name__ == "__main__":
