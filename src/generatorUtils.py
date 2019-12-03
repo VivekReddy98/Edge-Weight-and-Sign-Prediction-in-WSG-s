@@ -1,12 +1,13 @@
 import numpy as np
 import pandas as pd
+import networkx as nx
+import random
 from sklearn.preprocessing import OneHotEncoder
 
 ## For a given Batch size and number of nodes, generate (start, end) indexes as a tuple forever.
-class dataGen:
-	def __init__(self, batch_size, N):
+class dataGen():
+	def __init__(self, batch_size):
 		self.BS = batch_size
-		self.N = N
 		self.i=0
 
 	def batchIterator(self):
@@ -15,7 +16,8 @@ class dataGen:
 			yield (self.i-self.BS, self.i)
 		yield (self.i, self.N-1)
 
-	def gen(self):
+	def gen(self, N):
+		self.N = N
 		a = self.batchIterator()
 		while True:
 			try:
@@ -25,52 +27,83 @@ class dataGen:
 				a = self.batchIterator()
 
 
-def pairGenerator(dataGen):
-	def __init__(self, batch_size=256, epochs, adj_pos, adj_neg):
+class parseInput():
+	def __init__(self, path, column_names=['src', 'dst', 'rating', 'time']):
+		self.df = pd.read_csv(path, names=column_names).drop(['time'], axis=1)
+		self.N = max(self.df['src'].max(axis=0), self.df['dst'].max(axis=0))
+		self.posG = nx.DiGraph()
+		self.negG = nx.DiGraph()
+
+	def __generator_function(self, limit):
+		for i in range(0,limit):
+			yield i
+
+	def generate(self):
+		itr = self.__generator_function(self.N)
+		self.posG.add_nodes_from(itr)
+		self.posG.add_weighted_edges_from(self.df[self.df['rating']>0].values.tolist())
+		itr = self.__generator_function(self.N)
+		self.negG.add_nodes_from(itr)
+		self.posG.add_weighted_edges_from(self.df[self.df['rating']<0].values.tolist())
+		self.adj_pos = nx.to_numpy_matrix(self.posG)
+		self.adj_neg = nx.to_numpy_matrix(self.negG)
+		print(self.N, self.adj_neg.shape[0])
+		print("All Necessary Matrices have been computed")
+		return None
+
+
+class pairGenerator():
+	def __init__(self, batch_size=256):
 		self.BS = batch_size
 		self.i = 0
-		self.N = adj_neg.shape[0]
-		self.adj_neg = adj_neg
-		self.adj_pos = adj_pos
-		self.itr = self.gen()
 
-	def genTriplets(neutral_sampling_rate=0.50):
-		(start, end) = next(self.itr)
-		df_M = pd.Dataframe()
-		df_M_plus = pd.Dataframe()
-		df_M_minus = pd.Dataframe()
-		for i in range(start, end+1):
-			neu_ary = adj_pos[i,:]+adj_neg[i,:]
-			neu_ary[neu_ary != 0] = 0
-			neu_ary[neu_ary == 0] = 1
-			total_array = np.sum(neu_ary)
-			neu_ary = neu_ary/np.sum(neu_ary)
-			neu_ary = np.random.choice(self.N, int(total_array*neutral_sampling_rate), p=neu_ary)
+	def genPairs(self, G, neutral_sampling_rate=0.50):
+		D = dataGen(self.BS)
+		self.itr = D.gen(G.N)
+		
+		while True:	
+			(start, end) = next(self.itr)
 
-			temp_ary_pos = np.where(adj_pos[i,:]!=0)[0]
-			temp_ary_pos = np.append(np.append(np.full((temp_ary_pos.shape[0],) i), temp_ary_pos, axis=1), np.full((temp_ary_pos.shape[0],) 1),  axis=1)
-			temp_ary_neg = np.where(adj_neg[i,:]!=0)[0]
-			temp_ary_neg = np.append(np.append(np.full((temp_ary_pos.shape[0],) i), temp_ary_pos, axis=1), np.full((temp_ary_pos.shape[0],) -1),  axis=1)
-			temp_ary_neu = np.append(np.append(np.full((neu_ary.shape[0],) i), neu_ary, axis=1), np.full((neu_ary.shape[0],) 1),  axis=1)
+			df = G.df[G.df['src'].isin([i for i in range(start, end+1)])]
+			df_pos = df[df['rating']>0]
+			df_neg = df[df['rating']<0]
+			df_neu = pd.DataFrame()
+			df_twins = pd.DataFrame()
+			set_nodes = set(list([i for i in range(0, G.N)]))
 
-			df_pos = pd.Dataframe(temp_ary_pos, columns=['ui', 'uj', 's'])
-			df_neg = pd.Dataframe(temp_ary_neg, columns=['ui', 'uj', 's'])
-			df_neu = pd.Dataframe(temp_ary_neg, columns=['ui', 'uj', 's'])
+			for i in range(start, end+1):
+				pos_neigh = set(list(G.posG.neighbors(i)))
+				neg_neigh = set(list(G.negG.neighbors(i)))
+				neutral_nodes = set_nodes.difference(pos_neigh).difference(neg_neigh)
+				neutral_neigh = list(random.sample(neutral_nodes, int(len(neutral_nodes)*neutral_sampling_rate)))
+				df_neu_temp = pd.DataFrame(neutral_neigh, columns=['dst'])
+				df_neu_temp['src'] = i
+				df_neu_temp['rating'] = 0
+				df_neu = df_neu.append(df_neu_temp)
 
-			df_M = df_M.append(pd.concat[df_pos, df_neu, df_neg])
+			df_twins = df_twins.append(pd.concat([df_pos, df_neg, df_neu]))
+			print(df_neu.head())
+			df_pos = df_pos.drop(['rating'], axis=1)
+			df_neg = df_neg.drop(['rating'], axis=1)
+			df_neu = df_neu.drop(['rating'], axis=1)
 
-			df_pos.drop(['s'], axis=1)
-			df_neg.drop(['s'], axis=1)
-			df_neu.drop(['s'], axis=1)
-			df_M_plus = df_M_plus.append(df_pos.join(df_neu, on='ui', how='left'))
-			df_M_ = df_M_plus.append(df_pos.join(df_neu, on='ui', how='left').sample(frac=0.1))
-			df_M_minus = df_M_minus.aaapend(df_neg.join(df_neu, on='ui', how='left').sample(frac=0.1))
-			return None
+			df_neu.rename(columns={"dst": "uk"}, inplace=True) 
+
+			df_M_plus = df_pos.sample(frac=0.1).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/3)
+			df_M_minus = df_neg.sample(frac=0.1).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/3)
+
+			feed_dict = {"twins":df_twins, "pos_triplets": df_M_plus, "neg_triplets": df_M_minus}
+			yield feed_dict
+			break
 
 
 
-
-
+if __name__ == "__main__":
+	G = parseInput(path="datasets/soc-sign-bitcoinalpha.csv")
+	G.generate()
+	itr = pairGenerator().genPairs(G)
+	feed_dict = next(itr)
+	print(feed_dict)
 
 
 
