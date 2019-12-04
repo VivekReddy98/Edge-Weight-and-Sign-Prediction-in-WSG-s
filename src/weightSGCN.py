@@ -66,7 +66,7 @@ class weightSGCN():
 
 	def weightsMLG(self, name, variant='glorot'):
 		''' Multinomial Logistic Regression Weights : 2-D tensor, shape = 3(+, -, ?), d_in'''
-		shape = (3, 2*self.d_out)
+		shape = (3, 4*self.d_out)
 
 		if variant=='glorot':
 			return glorot(shape, name=name)
