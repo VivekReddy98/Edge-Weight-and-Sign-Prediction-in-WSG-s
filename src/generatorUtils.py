@@ -79,20 +79,34 @@ class pairGenerator():
 				df_neu_temp = pd.DataFrame(neutral_neigh, columns=['dst'])
 				df_neu_temp['src'] = i
 				df_neu_temp['rating'] = 0
-				df_neu = df_neu.append(df_neu_temp)
+				df_neu = df_neu.append(df_neu_temp.sample(frac=0.2))
+
 
 			df_twins = df_twins.append(pd.concat([df_pos, df_neg, df_neu]))
-			print(df_neu.head())
+			df_twins.reset_index(drop=True)
+			df_twins['rating'] = df_twins['rating'].apply(lambda x: 1 if x > 0 else (-1 if x < 0 else 0))
+			df_twins = df_twins[['src', 'dst', 'rating']]
+			#print(df_twins.sample(5))
+
+			df_twins = df_twins.values
+
+
+			df_twins_x = df_twins[:,0:2]
+			df_twins_y = df_twins[:,2]
+
+			
+			#print(df_twins_y.shape, df_twins.shape)
+
 			df_pos = df_pos.drop(['rating'], axis=1)
 			df_neg = df_neg.drop(['rating'], axis=1)
 			df_neu = df_neu.drop(['rating'], axis=1)
 
 			df_neu.rename(columns={"dst": "uk"}, inplace=True) 
 
-			df_M_plus = df_pos.sample(frac=0.1).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/3)
-			df_M_minus = df_neg.sample(frac=0.1).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/3)
+			df_M_plus = df_pos.sample(frac=0.05).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/5)
+			df_M_minus = df_neg.sample(frac=0.05).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/5)
 
-			feed_dict = {"twins":df_twins, "pos_triplets": df_M_plus, "neg_triplets": df_M_minus, "range": (start, end)}
+			feed_dict = {"twins_X":df_twins_x, "twins_Y":df_twins_y, "pos_triplets": df_M_plus.values, "neg_triplets": df_M_minus.values, "range": (start, end)}
 			yield feed_dict
 			break
 
