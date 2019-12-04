@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-import sys. os
+import sys, os
 from src.weightSGCN import weightSGCN
 from src.initialization import *
 
@@ -25,11 +25,15 @@ class Layer0(tf.keras.layers.Layer):
 		''' Inputs are assumed to be Node Id's given as a 1-d list of form [[]]''' 
 		''' kwargs should have two adj_matrices, with in and out nodes information '''
 		''' ds object having all the required matrices '''
+	
+		range_elements = tf.math.subtract(end, start)
 
 		self_vectors = tf.slice(self.h0, [start, 0], [end-start, tf.shape(self.h0)[-1]]) #shape = b, d_in
+		
 		''' For Balanced Sets '''
-		mask_pos_neigh = tf.slice(self.adj_pos, [start,0], [end-start,tf.shape(adj_pos)[-1]]) # shape = b, N where b = batch_size
+		mask_pos_neigh = tf.slice(self.adj_pos, [start,0], [end-start,tf.shape(self.adj_pos)[-1]]) # shape = b, N where b = batch_size
 		sum_neigh = tf.reduce_sum(mask_pos_neigh, 1)    # shape = b, 1
+		print(mask_pos_neigh, self.h0)
 		sum_pos_vectors = tf.matmul(mask_pos_neigh, self.h0, transpose_b=False) # shape = b, d_in
 		sum_pos_vectors = sum_pos_vectors / tf.reshape(sum_neigh, (-1, 1)) # Shape = b, d_in
 		pos_vectors = tf.concat([sum_pos_vectors, self_vectors], 1) #shape = b, 2*d_in
@@ -38,7 +42,7 @@ class Layer0(tf.keras.layers.Layer):
 		inputs.assign(tensor)
   
 		''' For Unbalanced Sets '''
-		mask_neg_neigh = tf.slice(self.adj_neg, [start,0], [end-start,tf.shape(adj_neg)[-1]]) # shape = b, N where b = batch_size
+		mask_neg_neigh = tf.slice(self.adj_neg, [start,0], [end-start,tf.shape(self.adj_neg)[-1]]) # shape = b, N where b = batch_size
 		sum_neigh = tf.reduce_sum(mask_neg_neigh, 1)    # shape = b, 1
 		sum_neg_vectors = tf.matmul(mask_neg_neigh, self.h0, transpose_b=False) # shape = b, d_in
 		sum_neg_vectors = sum_neg_vectors / tf.reshape(sum_neigh, (-1, 1)) # Shape = b, d_in

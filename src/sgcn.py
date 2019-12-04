@@ -10,16 +10,9 @@ from src.generatorUtils import parseInput, pairGenerator, dataGen
 # outs = sess.run([model.opt_op, model.loss, model.accuracy], feed_dict=feed_dict)
 # Ref Code: https://github.com/tkipf/gcn/blob/master/gcn/train.py
 
-def pairGenerator(dataGen):
-	def __init__(self, batch_size=256, epochs, adj_pos, adj_neg):
-		self.BS = batch_size
-		self.i = 0
-		self.N = adj_neg.shape[0]
-		self.adj_neg = adj_neg
-		self.adj_pos = adj_pos
 
 class sgcn():
-	def __init__(self, lambdaa, **kwargs):
+	def __init__(self, **kwargs):
 		
 		self.Layers = []
 		
@@ -30,7 +23,7 @@ class sgcn():
 		self.neg_triplets = tf.placeholder(tf.int32)
 		self.start = tf.placeholder(tf.int32)
 		self.end = tf.placeholder(tf.int32)
-		self.lambdaa = lambdaa
+		self.l = kwargs['lambdaa']
 
 		''' Optimizer and Loss Defined '''
 		self.optimizer = tf.train.AdamOptimizer(learning_rate=kwargs['learning_rate'])
@@ -41,6 +34,9 @@ class sgcn():
 
 	def build(self, num_L, adj_pos, adj_neg, d_out, values):
 		''' Values should be of type float32 ''' 
+		self.adj_pos = tf.constant(adj_pos, name='Adj_Pos_Static')
+		self.adj_neg = tf.constant(adj_neg, name='Adj_Neg_Static')
+
 		init = weightSGCN(num_L, values.shape[0], values.shape[1], d_out)
 		self.WU0 = init.weightsLayer1(name="Weights_firstLayer_unbalanced")
 		self.WB0 = init.weightsLayer1(name="Weights_firstLayer_balanced")
@@ -49,20 +45,24 @@ class sgcn():
 		self.WU = init.weightsLayer1N(name='Weights_Unbalanced')
 		self.zUB = init.Embeddings(name='Concat_Embeddings')
 		self.MLG = init.weightsMLG(name='weights_for_Multinomial_Logistic_Regression')
-		self.Layers.append(Layer0(WU0, WB0, h0))
+		self.h = init.interEmbeddings(name='Embeddings_B_UB')
+		self.Layers.append(Layer0(self.WU0, self.WB0, h0, self.adj_pos, self.adj_neg))
 		for i in range(1,num_L):
-			self.Layers.append(LayerIntermediate(i, self.WB, self.WU, adj_pos, adj_neg))
+			self.Layers.append(LayerIntermediate(i, self.WB, self.WU, self.adj_pos, self.adj_neg))
 		self.Layers.append(LayerLast(num_L-1))
 		return None
 
-	def forwardPass(self, h, start, end):
-		for index in range(0,self.Layers-1):
-			h = self.Layers[index].call(h, start, end)
-		self.zUB = self.Layers[-1].call(h)
+	def forwardPass(self):
+		with tf.Session() as sess:
+			start = self.start.eval()
+			end = self.end.eval()
+		print(start, end)
+		for index in range(0,len(self.Layers)-1):
+			self.h = self.Layers[index].call(self.h, start, end)
+		self.zUB = self.Layers[-1].call(self.h)
 
 		self.loss = tf.add(tf.add(tf.math.scalar_mul(-1, self.MLGloss), tf.add(self.BTlossPosl, self.BTlossNeg)))
 		self.loss = tf.add(self.loss,self.RegLoss)
-		self.opt_op = self.optimizer.minimize(self.loss)
 		return None
 
 	def MLGloss(self):

@@ -6,7 +6,7 @@ def glorot(size, name=None):
     """Glorot initialization """
     limit = np.sqrt(6.0/(size[0]+size[1]))
     initial = tf.random_uniform(shape=size, minval=-limit, maxval=limit, dtype=tf.float32)
-    return tf.get_variable(name=name, dtype=tf.float32, initializer = initial)
+    return tf.get_variable(name=name, initializer = initial)
 
 def uniform(size, name, limit=0.05):
     """Uniform initialization of Weights."""
