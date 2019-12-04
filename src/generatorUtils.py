@@ -84,7 +84,7 @@ class pairGenerator():
 
 			df_twins = df_twins.append(pd.concat([df_pos, df_neg, df_neu]))
 			df_twins.reset_index(drop=True)
-			df_twins['rating'] = df_twins['rating'].apply(lambda x: 1 if x > 0 else (-1 if x < 0 else 0))
+			df_twins['rating'] = df_twins['rating'].apply(lambda x: 1 if x > 0 else (2 if x < 0 else 0))
 			df_twins = df_twins[['src', 'dst', 'rating']]
 			#print(df_twins.sample(5))
 
@@ -92,8 +92,10 @@ class pairGenerator():
 
 
 			df_twins_x = df_twins[:,0:2]
-			df_twins_y = df_twins[:,2]
+			y = df_twins[:,2]
 
+			df_twins_y = np.zeros((y.size, 3))
+			df_twins_y[np.arange(y.size),y] = 1
 			
 			#print(df_twins_y.shape, df_twins.shape)
 
@@ -106,7 +108,7 @@ class pairGenerator():
 			df_M_plus = df_pos.sample(frac=0.05).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/5)
 			df_M_minus = df_neg.sample(frac=0.05).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/5)
 
-			feed_dict = {"twins_X":df_twins_x, "twins_Y":df_twins_y, "pos_triplets": df_M_plus.values, "neg_triplets": df_M_minus.values, "range": (start, end)}
+			feed_dict = {"twins_X":df_twins_x, "y":y, "twins_Y":df_twins_y, "pos_triplets": df_M_plus.values, "neg_triplets": df_M_minus.values, "range": (start, end)}
 			yield feed_dict
 			break
 
@@ -116,7 +118,7 @@ if __name__ == "__main__":
 	G.generate()
 	itr = pairGenerator().genPairs(G)
 	feed_dict = next(itr)
-	print(feed_dict)
+	print(feed_dict['twins_Y'], feed_dict['y'])
 
 
 
