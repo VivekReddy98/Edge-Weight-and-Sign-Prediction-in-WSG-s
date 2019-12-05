@@ -8,7 +8,7 @@ from numpy import linalg as LA
 import networkx as nx
 from networkx.linalg.laplacianmatrix import directed_laplacian_matrix
 
-## For a given Batch size and number of nodes, generate (start, end) indexes as a tuple forever.
+## For a given Batch size and number of nodes, generate (start, end) indexes as a tuple, forever.
 class dataGen():
 	def __init__(self, batch_size):
 		self.BS = batch_size
@@ -34,7 +34,8 @@ class dataGen():
 class parseInput():
 	def __init__(self, path, D_in, column_names=['src', 'dst', 'rating', 'time']):
 		self.df = pd.read_csv(path, names=column_names).drop(['time'], axis=1)
-		self.N = max(self.df['src'].max(axis=0), self.df['dst'].max(axis=0))
+		#self.N = max(self.df['src'].max(axis=0), self.df['dst'].max(axis=0))
+		self.N = 3783
 		self.posG = nx.DiGraph()
 		self.negG = nx.DiGraph()
 		self.path = path
@@ -89,7 +90,8 @@ class pairGenerator():
 			set_nodes = set(list([i for i in range(0, G.N)]))
 
 			for i in range(start, end+1):
-				neigh = set(list(self.DiG.neighbors(i)))
+				#neigh = set(list(G.DiG.neighbors(i)))
+				neigh = set([])
 				neutral_nodes = set_nodes.difference(neigh)
 				neutral_neigh = list(random.sample(neutral_nodes, int(len(neutral_nodes)*neutral_sampling_rate)))
 				df_neu_temp = pd.DataFrame(neutral_neigh, columns=['dst'])

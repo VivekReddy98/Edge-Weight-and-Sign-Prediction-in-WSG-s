@@ -52,11 +52,9 @@ class Layer0(tf.keras.layers.Layer):
 		#with tf.compat.v1.variable_scope("Embeddings_B_UB"):
 		with tf.compat.v1.Session() as sess:
 			tensor = inputs[start:end, :, 0, 0].assign(tf.nn.relu(tf.matmul(pos_vectors, self.WB0, transpose_b=True))) #shape = N, d_out, L
-			tensor.eval(session=sess)
-			inputs.assign(tensor)
+			inputs = tf.Variable(tensor)
 			tensor = inputs[start:end, :, 0, 1].assign(tf.nn.relu(tf.matmul(neg_vectors, self.WU0, transpose_b=True))) #shape = N, d_out, L
-			tensor.eval(session=sess)
-			inputs.assign(tensor)
+			inputs = tf.Variable(tensor)
 		return inputs
 
 class LayerIntermediate(tf.keras.layers.Layer):
@@ -110,8 +108,7 @@ class LayerIntermediate(tf.keras.layers.Layer):
 		#with tf.compat.v1.variable_scope("Embeddings_B_UB"):
 		with tf.compat.v1.Session() as sess:
 			tensor = h[start:end, :, 0, 0].assign(tf.nn.relu(tf.matmul(concat_vector, sliced_weights, transpose_b=True))) #shape = b, 3*d_out 
-			tensor.eval(session=sess)
-			h.assign(tensor)
+			h = tf.Variable(tensor)
 		return h
 
 class LayerLast(tf.keras.layers.Layer):

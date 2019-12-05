@@ -23,7 +23,7 @@ class sgcn():
 		self.neg_triplets = tf.compat.v1.placeholder(tf.int32, name='Triplelets_Negative_nodes')
 		self.start = tf.compat.v1.placeholder(tf.int32, name='Start_index')
 		self.end = tf.compat.v1.placeholder(tf.int32, name='End_Index')
-		self.l = kwargs['lambdaa']
+		self.l = tf.constant(kwargs['lambdaa'], dtype=tf.float32, name="lambda")
 
 		''' Optimizer and Loss Defined '''
 		self.optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=kwargs['learning_rate'])
@@ -57,8 +57,7 @@ class sgcn():
 			self.h = self.Layers[index].call(self.h, self.start, self.end)
 		self.zUB = self.Layers[-1].call(self.h)
 
-		self.loss = tf.add(tf.add(tf.math.scalar_mul(-1, self.MLGloss), tf.add(self.BTlossPosl, self.BTlossNeg)))
-		self.loss = tf.add(self.loss,self.RegLoss)
+		self.loss = tf.add(tf.add(self.MLGloss(), tf.add(self.BTlossPos(), self.BTlossNeg())), self.RegLoss())
 		return None
 
 	def MLGloss(self):
@@ -69,7 +68,8 @@ class sgcn():
 		eij_mask = tf.math.multiply(eij, self.one_hot_encode)
 		eij = tf.math.reciprocal(tf.math.reduce_sum(eij, axis=1))
 		eij_mask = tf.math.reduce_sum(eij_mask, axis=1)
-		return tf.math.divide(tf.reduce_sum(tf.math.log(tf.math.multiply_no_nan(eij, eij_mask)), axis=0), tf.shape(self.twins)[0])
+		mlg = tf.math.divide(tf.reduce_sum(tf.math.log(tf.math.multiply_no_nan(eij, eij_mask)), axis=0), tf.dtypes.cast(tf.shape(self.twins)[0], dtype=tf.float32))
+		return tf.math.scalar_mul(tf.constant(-1, dtype=tf.float32), mlg)
 
 	# Balance Theory Loss Specified in the Paper for Positive Triplets
 	def BTlossPos(self):
@@ -82,8 +82,10 @@ class sgcn():
 
 		subijk = tf.math.subtract(uij,uik)
 		bool_sub = tf.greater_equal(subijk, 0.)
-		return tf.math.scalar_mul(self.l, tf.math.divide(tf.reduce_sum(tf.where_v2(bool_sub, subijk), axis=0), tf.shape(self.pos_triplets)[0]))
+		zero_tf = tf.zeros(shape=tf.shape(bool_sub), dtype=tf.float32)
+		return tf.math.scalar_mul(self.l, tf.math.divide(tf.reduce_sum(tf.where(bool_sub, subijk, zero_tf), axis=0), tf.dtypes.cast(tf.shape(self.pos_triplets)[0], dtype=tf.float32)))
 
+	# Balance Theory Loss Specified in the Paper for Negative Triplets
 	def BTlossNeg(self):
 		ui = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.neg_triplets, [0,0], [-1,1]), [tf.shape(self.neg_triplets)[0], 1]))
 		uj = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.neg_triplets, [0,1], [-1,1]), [tf.shape(self.neg_triplets)[0], 1]))
@@ -94,12 +96,13 @@ class sgcn():
 
 		subijk = tf.math.subtract(uij,uik)
 		bool_sub = tf.greater_equal(subijk, 0.)
-		return tf.math.scalar_mul(self.l, tf.math.divide(tf.reduce_sum(tf.where_v2(bool_sub, subijk), axis=0), tf.shape(self.neg_triplets)[0]))
+		zero_tf = tf.zeros(shape=tf.shape(bool_sub), dtype=tf.float32)
+		return tf.math.scalar_mul(self.l, tf.math.divide(tf.reduce_sum(tf.where(bool_sub, subijk, zero_tf), axis=0), tf.dtypes.cast(tf.shape(self.neg_triplets)[0], dtype=tf.float32)))
 
 	def RegLoss(self):
-		MLG_L = tf.norm(self.MLG, ord='fro')
-		Z = tf.add(tf.norm(self.WU, ord='fro'), tf.norm(self.WB, ord='fro'))
-		Z0 = tf.add(tf.norm(self.WU0, ord='fro'), tf.norm(self.WB0, ord='fro'))
+		MLG_L = tf.norm(self.MLG, ord='euclidean')
+		Z = tf.add(tf.norm(self.WU, ord='euclidean'), tf.norm(self.WB, ord='euclidean'))
+		Z0 = tf.add(tf.norm(self.WU0, ord='euclidean'), tf.norm(self.WB0, ord='euclidean'))
 		return tf.math.reduce_sum(tf.stack([MLG_L, Z, Z0]))
 
 if __name__ == "__main__":
