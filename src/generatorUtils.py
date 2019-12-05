@@ -44,7 +44,7 @@ class parseInput():
 			yield i
 			
 	def create_X(self,path,D_in):
-		G = nx.read_weighted_edgelist("data/soc-sign-bitcoinalpha2.csv",delimiter=',',create_using=nx.Graph)
+		G = nx.read_weighted_edgelist(path,delimiter=',',create_using=nx.Graph)
 		L = np.squeeze(np.asarray(nx.laplacian_matrix(G).todense()))
 		X = L[:,:D_in]
 		return X
