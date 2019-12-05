@@ -30,6 +30,59 @@ class dataGen():
 				self.i=0
 				a = self.batchIterator()
 
+class preprocessed_graph:
+    def __init__(self,path):
+        old_dataframe = pd.read_csv(path,names=['source','target','weight','time'])
+        old_nodes = self.get_old_node_ids(old_dataframe)
+        self.nodes = self.get_new_node_ids(old_nodes)
+        old_new_node_map = dict(zip(old_nodes,self.nodes))
+        self.sources = self.get_new_source_ids(old_dataframe,old_new_node_map)
+        self.targets = self.get_new_target_ids(old_dataframe,old_new_node_map)
+        self.weights = old_dataframe.weight.tolist()
+        self.edges = tuple(zip(self.sources,self.targets,map(lambda x: {'weight':x},self.weights)))
+        
+    def get_new_source_ids(self,old_dataframe,old_new_node_map):
+        old_sources = old_dataframe.source.tolist()
+        new_sources = self.remap(old_sources,old_new_node_map)
+        return new_sources
+        
+    def get_new_target_ids(self,old_dataframe,old_new_node_map):
+        old_targets = old_dataframe.target.tolist()
+        new_targets = self.remap(old_targets,old_new_node_map)
+        return new_targets
+        
+    def get_new_node_ids(self,old_node_ids):
+        num_nodes = len(old_node_ids)
+        new_node_ids = range(0,num_nodes)
+        return new_node_ids
+    
+    def get_old_node_ids(self,dataframe):
+        old_source_ids = dataframe.source.tolist()
+        old_target_ids = dataframe.target.tolist()
+        old_node_ids = list(set(old_source_ids).union(set(old_target_ids)))
+        return old_node_ids
+    
+    def remap(self,old_list,old_new_map):
+        num_nodes_in_list = len(old_list)
+        new_list = old_list
+        for i in range(0,num_nodes_in_list):
+            new_list[i] = old_new_map[old_list[i]]
+        return new_list
+        
+    def dataframe(self,colnames):
+        d = {colnames[0]:self.sources, colnames[1]:self.targets, colnames[2]:self.targets}
+        graph_dataframe = pd.DataFrame(data=d)
+        return graph_dataframe
+    
+    def graph(self):
+        graph = nx.Graph()
+        graph.add_edges_from(self.edges)
+        return graph
+    
+    def digraph(self):
+        digraph = nx.DiGraph()
+        digraph.add_edges_from(self.edges)
+        return digraph
 
 class parseInput():
 	def __init__(self, path, D_in, column_names=['src', 'dst', 'rating', 'time']):
