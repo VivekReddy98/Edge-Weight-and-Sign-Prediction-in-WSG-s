@@ -131,14 +131,6 @@ class pairGenerator():
 			break
 
 
-if __name__ == "__main__":
-	G = parseInput(path="datasets/soc-sign-bitcoinalpha.csv")
-	G.generate()
-	itr = pairGenerator().genPairs(G)
-	feed_dict = next(itr)
-	print(feed_dict['twins_Y'], feed_dict['y'])
-
-
 
 
 

@@ -4,8 +4,13 @@ from src.generatorUtils import parseInput, pairGenerator, dataGen
 from src.sgcn import sgcn
 import tensorflow as tf
 import numpy as np
-
 tf.compat.v1.disable_eager_execution()
+
+#https://github.com/tensorflow/tensorflow/issues/28287
+global sess
+global graph
+sess = tf.compat.v1.Session()
+graph = tf.compat.v1.get_default_graph()
 
 
 # Pre-req's for the model
@@ -16,20 +21,24 @@ itr = pairGenerator(batch_size=2).genPairs(G)
 
 ## Inital Embedding Computed using various methods
 values = np.random.rand(G.N, 256).astype(np.float32)
-''' 
-1) Model Initialization 
-2) Model Build (Stacking Layers)
-3) Building the Computation graph and loss
-'''
-model = sgcn(lambdaa=0.5, learning_rate=0.005)
-model.build(4, G.adj_pos, G.adj_neg, 32, values.astype(np.float32))
-model.forwardPass()
 
-'''
-1) Running the model for number of epochs given
-2) For every Epoch, a feed dict with necessary values is created to be fed into the computation graph 
-'''
-with tf.compat.v1.Session() as sess:
+with graph.as_default():
+
+	tf.compat.v1.keras.backend.set_session(sess)
+
+	''' 
+	1) Model Initialization 
+	2) Model Build (Stacking Layers)
+	3) Building the Computation graph and loss
+	'''
+	model = sgcn(lambdaa=0.5, learning_rate=0.005)
+	model.build(4, G.adj_pos, G.adj_neg, 32, values.astype(np.float32))
+	model.forwardPass()
+
+	'''
+	1) Running the model for number of epochs given
+	2) For every Epoch, a feed dict with necessary values is created to be fed into the computation graph 
+	'''
 
 	# Initialize all the variables
 
@@ -42,13 +51,18 @@ with tf.compat.v1.Session() as sess:
 		feed_dict = next(itr)
 
 		print("Going into the Loss Function")
-		outs = sess.run([model.optimizer.minimize(model.loss), model.loss], feed_dict={model.twins: feed_dict['twins_X'],
-																					   model.one_hot_encode: feed_dict['twins_Y'].astype(np.float32),
-																					   model.pos_triplets: feed_dict['pos_triplets'],
-																					   model.neg_triplets: feed_dict['neg_triplets'],
-																					   model.start: np.array(feed_dict['range'][0]).astype(np.int32),
-																					   model.end: np.array(feed_dict['range'][1]).astype(np.int32)
-																						})
+
+		#LOSS = tf.function(model.loss)
+		print(feed_dict['range'])
+		out_loss = sess.run(model.loss, feed_dict={model.twins: feed_dict['twins_X'],
+													model.one_hot_encode: feed_dict['twins_Y'].astype(np.float32),
+													model.pos_triplets: feed_dict['pos_triplets'],
+													model.neg_triplets: feed_dict['neg_triplets'],
+													model.start: np.array(feed_dict['range'][0]).astype(np.int32),
+													model.end: np.array(feed_dict['range'][1]).astype(np.int32)
+												  })
+		print(out_loss)
+		outs = sess.run(model.optimizer.minimize(model.loss, model.var_list))
 
 		print(outs)
 
