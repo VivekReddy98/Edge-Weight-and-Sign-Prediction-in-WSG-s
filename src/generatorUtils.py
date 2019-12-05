@@ -3,6 +3,10 @@ import pandas as pd
 import networkx as nx
 import random
 from sklearn.preprocessing import OneHotEncoder
+import os, os.path
+from numpy import linalg as LA
+import networkx as nx
+from networkx.linalg.laplacianmatrix import directed_laplacian_matrix
 
 ## For a given Batch size and number of nodes, generate (start, end) indexes as a tuple forever.
 class dataGen():
@@ -28,15 +32,22 @@ class dataGen():
 
 
 class parseInput():
-	def __init__(self, path, column_names=['src', 'dst', 'rating', 'time']):
+	def __init__(self, path, column_names=['src', 'dst', 'rating', 'time'], D_in):
 		self.df = pd.read_csv(path, names=column_names).drop(['time'], axis=1)
 		self.N = max(self.df['src'].max(axis=0), self.df['dst'].max(axis=0))
 		self.posG = nx.DiGraph()
 		self.negG = nx.DiGraph()
+		self.X = self.create_X(path, D_in)
 
 	def __generator_function(self, limit):
 		for i in range(0,limit):
 			yield i
+			
+	def create_X(self,path,D_in):
+		G = nx.read_weighted_edgelist("data/soc-sign-bitcoinalpha2.csv",delimiter=',',create_using=nx.Graph)
+		L = np.squeeze(np.asarray(nx.laplacian_matrix(G).todense()))
+		X = L[:,:D_in]
+		return X
 
 	def generate(self):
 		itr = self.__generator_function(self.N)
