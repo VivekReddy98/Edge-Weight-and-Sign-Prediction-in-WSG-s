@@ -17,25 +17,25 @@ class sgcn():
 		self.Layers = []
 		
 		''' Defined as Placeholders as the values in them might change depending on the batch'''
-		self.twins = tf.placeholder(tf.int32)
-		self.one_hot_encode = tf.placeholder(tf.float32)
-		self.pos_triplets = tf.placeholder(tf.int32)
-		self.neg_triplets = tf.placeholder(tf.int32)
-		self.start = tf.placeholder(tf.int32)
-		self.end = tf.placeholder(tf.int32)
+		self.twins = tf.compat.v1.placeholder(tf.int32, name='Pairs_MLGLoss')
+		self.one_hot_encode = tf.compat.v1.placeholder(tf.float32, name='Class_as_oneHot_encoded_vector')
+		self.pos_triplets = tf.compat.v1.placeholder(tf.int32, name='Triplelets_Positive_nodes')
+		self.neg_triplets = tf.compat.v1.placeholder(tf.int32, name='Triplelets_Negative_nodes')
+		self.start = tf.compat.v1.placeholder(tf.int32, name='Start_index')
+		self.end = tf.compat.v1.placeholder(tf.int32, name='End_Index')
 		self.l = kwargs['lambdaa']
 
 		''' Optimizer and Loss Defined '''
-		self.optimizer = tf.train.AdamOptimizer(learning_rate=kwargs['learning_rate'])
-		self.loss = tf.placeholder(tf.float32)
+		self.optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=kwargs['learning_rate'])
+		self.loss = tf.compat.v1.placeholder(tf.float32)
 		
 
 		#self.build(kwargs['num_L'], kwargs['adj_pos'], kwargs['adj_neg'], kwargs['d_out'], kwargs['values'])
 
 	def build(self, num_L, adj_pos, adj_neg, d_out, values):
 		''' Values should be of type float32 ''' 
-		self.adj_pos = tf.constant(adj_pos, name='Adj_Pos_Static')
-		self.adj_neg = tf.constant(adj_neg, name='Adj_Neg_Static')
+		self.adj_pos = tf.constant(adj_pos.astype(np.float32), name='Adj_Pos_Static')
+		self.adj_neg = tf.constant(adj_neg.astype(np.float32), name='Adj_Neg_Static')
 
 		init = weightSGCN(num_L, values.shape[0], values.shape[1], d_out)
 		self.WU0 = init.weightsLayer1(name="Weights_firstLayer_unbalanced")
@@ -53,12 +53,8 @@ class sgcn():
 		return None
 
 	def forwardPass(self):
-		with tf.Session() as sess:
-			start = self.start.eval()
-			end = self.end.eval()
-		print(start, end)
 		for index in range(0,len(self.Layers)-1):
-			self.h = self.Layers[index].call(self.h, start, end)
+			self.h = self.Layers[index].call(self.h, self.start, self.end)
 		self.zUB = self.Layers[-1].call(self.h)
 
 		self.loss = tf.add(tf.add(tf.math.scalar_mul(-1, self.MLGloss), tf.add(self.BTlossPosl, self.BTlossNeg)))

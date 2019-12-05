@@ -43,7 +43,7 @@ class weightSGCN():
 		''' Intermedite Node Embeddings for all the layers: 3-D Tensor, shape:  #Nodes, d_out, #Layers, 2 (one for UB and B) '''
 		shape = (self.N, self.d_out, self.L, 2)
 
-		with tf.variable_scope("embed"):
+		with tf.compat.v1.variable_scope("embed"):
 			if variant=='glorot':
 				return glorot(shape, name=name)
 			elif variant=='uniform':
@@ -55,7 +55,7 @@ class weightSGCN():
 		''' Final Concantenated output Embeddings: 2-D Tensor, Shape: #Nodes, 2*d_out'''
 		shape = (self.N, 2*self.d_out)
 
-		with tf.variable_scope("embed"):
+		with tf.compat.v1.variable_scope("embed"):
 			if variant=='glorot':
 				return glorot(shape, name=name)
 			elif variant=='uniform':

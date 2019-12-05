@@ -3,4 +3,3 @@ numpy
 pandas
 scipy
 sklearn
-tensorflow==1.5

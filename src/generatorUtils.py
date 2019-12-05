@@ -32,33 +32,39 @@ class dataGen():
 
 
 class parseInput():
-	def __init__(self, path, column_names=['src', 'dst', 'rating', 'time'], D_in):
+	def __init__(self, path, D_in, column_names=['src', 'dst', 'rating', 'time']):
 		self.df = pd.read_csv(path, names=column_names).drop(['time'], axis=1)
 		self.N = max(self.df['src'].max(axis=0), self.df['dst'].max(axis=0))
 		self.posG = nx.DiGraph()
 		self.negG = nx.DiGraph()
-		self.X = self.create_X(path, D_in)
+		self.path = path
+		self.X = self.create_X(D_in)
+		
 
 	def __generator_function(self, limit):
 		for i in range(0,limit):
 			yield i
 			
-	def create_X(self,path,D_in):
-		G = nx.read_weighted_edgelist("data/soc-sign-bitcoinalpha2.csv",delimiter=',',create_using=nx.Graph)
+	def create_X(self,D_in):
+		G = nx.read_weighted_edgelist(self.path,delimiter=',',create_using=nx.Graph)
 		L = np.squeeze(np.asarray(nx.laplacian_matrix(G).todense()))
 		X = L[:,:D_in]
 		return X
 
 	def generate(self):
-		itr = self.__generator_function(self.N)
-		self.posG.add_nodes_from(itr)
-		self.posG.add_weighted_edges_from(self.df[self.df['rating']>0].values.tolist())
-		itr = self.__generator_function(self.N)
-		self.negG.add_nodes_from(itr)
-		self.posG.add_weighted_edges_from(self.df[self.df['rating']<0].values.tolist())
-		self.adj_pos = nx.to_numpy_matrix(self.posG)
-		self.adj_neg = nx.to_numpy_matrix(self.negG)
-		print(self.N, self.adj_neg.shape[0])
+		self.DiG = nx.read_weighted_edgelist(self.path,delimiter=',',create_using=nx.DiGraph)
+		adj = nx.to_numpy_matrix(self.DiG)
+		self.adj_pos = np.where(adj >= 0 , adj, 0)
+		self.adj_neg = np.where(adj <= 0 , adj, 0)
+		# itr = self.__generator_function(self.N)
+		# self.posG.add_nodes_from(itr)
+		# self.posG.add_weighted_edges_from(self.df[self.df['rating']>0].values.tolist())
+		# itr = self.__generator_function(self.N)
+		# self.negG.add_nodes_from(itr)
+		# self.posG.add_weighted_edges_from(self.df[self.df['rating']<0].values.tolist())
+		# self.adj_pos = nx.to_numpy_matrix(self.posG)
+		# self.adj_neg = nx.to_numpy_matrix(self.negG)
+		# print(self.N, self.adj_neg.shape[0])
 		print("All Necessary Matrices have been computed")
 		return None
 
@@ -83,9 +89,8 @@ class pairGenerator():
 			set_nodes = set(list([i for i in range(0, G.N)]))
 
 			for i in range(start, end+1):
-				pos_neigh = set(list(G.posG.neighbors(i)))
-				neg_neigh = set(list(G.negG.neighbors(i)))
-				neutral_nodes = set_nodes.difference(pos_neigh).difference(neg_neigh)
+				neigh = set(list(self.DiG.neighbors(i)))
+				neutral_nodes = set_nodes.difference(neigh)
 				neutral_neigh = list(random.sample(neutral_nodes, int(len(neutral_nodes)*neutral_sampling_rate)))
 				df_neu_temp = pd.DataFrame(neutral_neigh, columns=['dst'])
 				df_neu_temp['src'] = i

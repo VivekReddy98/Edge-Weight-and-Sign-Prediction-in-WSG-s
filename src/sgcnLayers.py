@@ -28,28 +28,35 @@ class Layer0(tf.keras.layers.Layer):
 	
 		range_elements = tf.math.subtract(end, start)
 
-		self_vectors = tf.slice(self.h0, [start, 0], [end-start, tf.shape(self.h0)[-1]]) #shape = b, d_in
+		range_indices = tf.range(start, end, 1)
+
+
+		self_vectors = tf.slice(self.h0, [start, 0], [range_elements, tf.shape(self.h0)[-1]]) #shape = b, d_in
 		
 		''' For Balanced Sets '''
-		mask_pos_neigh = tf.slice(self.adj_pos, [start,0], [end-start,tf.shape(self.adj_pos)[-1]]) # shape = b, N where b = batch_size
+		mask_pos_neigh = tf.slice(self.adj_pos, [start, 0], [range_elements, tf.shape(self.adj_pos)[-1]]) # shape = b, N where b = batch_size
 		sum_neigh = tf.reduce_sum(mask_pos_neigh, 1)    # shape = b, 1
-		print(mask_pos_neigh, self.h0)
+		print(mask_pos_neigh, self.h0, self.adj_pos)
 		sum_pos_vectors = tf.matmul(mask_pos_neigh, self.h0, transpose_b=False) # shape = b, d_in
 		sum_pos_vectors = sum_pos_vectors / tf.reshape(sum_neigh, (-1, 1)) # Shape = b, d_in
 		pos_vectors = tf.concat([sum_pos_vectors, self_vectors], 1) #shape = b, 2*d_in
-		tensor = inputs[start:end, :, 0, 0].assign(tf.nn.relu(tf.matmul(pos_vectors, self.WB0, transpose_b=True))) #shape = N, d_out, L
-		tensor.eval()
-		inputs.assign(tensor)
+		
   
 		''' For Unbalanced Sets '''
-		mask_neg_neigh = tf.slice(self.adj_neg, [start,0], [end-start,tf.shape(self.adj_neg)[-1]]) # shape = b, N where b = batch_size
+		mask_neg_neigh = tf.slice(self.adj_neg, [start,0], [range_elements, tf.shape(self.adj_neg)[-1]]) # shape = b, N where b = batch_size
 		sum_neigh = tf.reduce_sum(mask_neg_neigh, 1)    # shape = b, 1
 		sum_neg_vectors = tf.matmul(mask_neg_neigh, self.h0, transpose_b=False) # shape = b, d_in
 		sum_neg_vectors = sum_neg_vectors / tf.reshape(sum_neigh, (-1, 1)) # Shape = b, d_in
 		neg_vectors = tf.concat([sum_neg_vectors, self_vectors], 1) #shape = b, 2*d_in
-		tensor = inputs[start:end, :, 0, 1].assign(tf.nn.relu(tf.matmul(neg_vectors, self.WU0, transpose_b=True))) #shape = N, d_out, L
-		tensor.eval()
-		inputs.assign(tensor)
+
+		#with tf.compat.v1.variable_scope("Embeddings_B_UB"):
+		with tf.compat.v1.Session() as sess:
+			tensor = inputs[start:end, :, 0, 0].assign(tf.nn.relu(tf.matmul(pos_vectors, self.WB0, transpose_b=True))) #shape = N, d_out, L
+			tensor.eval(session=sess)
+			inputs.assign(tensor)
+			tensor = inputs[start:end, :, 0, 1].assign(tf.nn.relu(tf.matmul(neg_vectors, self.WU0, transpose_b=True))) #shape = N, d_out, L
+			tensor.eval(session=sess)
+			inputs.assign(tensor)
 		return inputs
 
 class LayerIntermediate(tf.keras.layers.Layer):
@@ -73,20 +80,24 @@ class LayerIntermediate(tf.keras.layers.Layer):
 
 	def computeEmbeddings(self, h, W, start, end, adj_pos, adj_neg, U=0):
 
+		range_elements = tf.math.subtract(end, start)
+
+		range_indices = tf.range(start, end, 1)
+
 		shp_h = tf.shape(h)
 
-		self_embeddings = tf.reshape(tf.slice(h, [start, 0, self.Lid-1, U], [end-start, -1, 1, 1]), [end-start, tf.shape(h)[1]]) #shape = b, d_out
+		self_embeddings = tf.reshape(tf.slice(h, [start, 0, self.Lid-1, U], [range_elements, -1, 1, 1]), [range_elements, tf.shape(h)[1]]) #shape = b, d_out
 		
 		# From the Embedding matrix of size N, d_out, L, 2, get embeddings of the given layer id-1 of shape N, d_out.
 
 		# Positive Neighbours, (Balanced or Unbalanced Weights depends on the value of U)
-		mask_neigh_P = tf.slice(adj_pos, [start,0], [end-start,-1]) # shape = b, N where b = batch_size
+		mask_neigh_P = tf.slice(adj_pos, [start,0], [range_elements,-1]) # shape = b, N where b = batch_size
 		sum_neigh_P = tf.reduce_sum(mask_neigh_P, 1)    # shape = b, 1
 		embeddings_this_layer_P = tf.reshape(tf.slice(h, [0,0,self.Lid-1,U], [-1, -1, 1, 1]), [tf.shape(h)[0], tf.shape(h)[1]]) # Unbalanced or Balanced based on the value of U
 		sum_embeddings_P = tf.matmul(mask_neigh_P, embeddings_this_layer_P) / tf.reshape(sum_neigh_P, (-1, 1)) # shape = b, d_out 
 		
 		# Negative Neighbours, (Balanced or Unbalanced Weights depends on the value of U)
-		mask_neigh_N = tf.slice(adj_neg, [start,0], [end-start,-1]) # shape = b, N where b = batch_size
+		mask_neigh_N = tf.slice(adj_neg, [start,0], [range_elements,-1]) # shape = b, N where b = batch_size
 		sum_neigh_N = tf.reduce_sum(mask_neigh_N, 1)    # shape = b, 1
 		embeddings_this_layer_N = tf.reshape(tf.slice(h, [0,0,self.Lid-1,int(not(U))], [-1, -1, 1, 1]), [tf.shape(h)[0], tf.shape(h)[1]]) # Unbalanced or Balanced based on the value of U
 		sum_embeddings_N = tf.matmul(mask_neigh_N, embeddings_this_layer_N) / tf.reshape(sum_neigh_N, (-1, 1)) # shape = b, d_out
@@ -96,10 +107,11 @@ class LayerIntermediate(tf.keras.layers.Layer):
 		
 		# Get the Weights Corresponding to this layer 
 		sliced_weights = tf.reshape(tf.slice(W, [0, 0, self.Lid-1], [-1, -1, 1]), [tf.shape(W)[0], tf.shape(W)[1]])
-		
-		tensor = h[start:end, :, 0, 0].assign(tf.nn.relu(tf.matmul(concat_vector, sliced_weights, transpose_b=True))) #shape = b, 3*d_out 
-		tensor.eval()
-		h.assign(tensor)
+		#with tf.compat.v1.variable_scope("Embeddings_B_UB"):
+		with tf.compat.v1.Session() as sess:
+			tensor = h[start:end, :, 0, 0].assign(tf.nn.relu(tf.matmul(concat_vector, sliced_weights, transpose_b=True))) #shape = b, 3*d_out 
+			tensor.eval(session=sess)
+			h.assign(tensor)
 		return h
 
 class LayerLast(tf.keras.layers.Layer):
