@@ -3,6 +3,45 @@ import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 from sklearn.model_selection import GridSearchCV
+import h5py
+import pandas as pd
+import numpy as np
+
+def predictMetrics(embeddings, df_train, df_test):
+    train = np.zeros((df_train.shape[0], 2*embeddings.shape[1]))
+    y_train = np.zeros((df_train.shape[0], 1))
+    test = np.zeros((df_test.shape[0], 2*embeddings.shape[1]))
+    y_test = np.zeros((df_test.shape[0], 1))
+
+    for i in range(0, df_train.shape[0]):
+        train[i,:] = np.append(embeddings[int(df_train['src'].iloc[i])], embeddings[int(df_train['dst'].iloc[i])])
+        y_train[i,0] = df_train['rating'].iloc[i]
+
+    print(df_test.shape[0])
+    for j in range(0, df_test.shape[0]):
+        try:
+            a = embeddings[int(df_test['src'].iloc[j]),:].tolist()
+            b = embeddings[int(df_test['dst'].iloc[j]),:].tolist()
+            a = a.extend(b)
+            x.append(a)
+        except:
+            pass
+            #print("fucjked")
+            #print(j)
+        y_test[j,0] = int(df_test['rating'].iloc[j])
+    
+
+    model = svm.LinearSVR()
+    model.fit(train, y_train)
+    y_pred_train = model.predict(train)
+    y_pred_test = model.predict(test)
+    print("Explained Variance for Train Dataset : {}".format(explained_variance_score(y_pred_train, y_train, multioutput='uniform_average')))
+    print("Explained Variance for Test Dataset : {}".format(explained_variance_score(y_pred_test, y_test, multioutput='uniform_average')))
+
+    print("R2 coefficient for Train Dataset : {}".format(r2_score(y_pred_train, y_train, multioutput='uniform_average')))
+    print("R2 coefficient for Test Dataset : {}".format(r2_score(y_pred_test, y_test, multioutput='uniform_average')))
+    return None
+
 
 def get_explained_variance_score(embeddings,G):
     A = np.squeeze(np.asarray(nx.adjacency_matrix(G).todense()))
@@ -29,3 +68,28 @@ def get_explained_variance_score(embeddings,G):
 
     y_pred = reg.predict(X_test)
     return explained_variance_score(y_test,y_pred,multioutput='uniform_average')
+
+if __name__ == "__main__":
+    with h5py.File('embeddings\\Embeddings_128_soc-sign-bitcoinotc_8.h5', 'r') as f:
+        embeddings_otc = np.array(f.get('Embeddings'))
+    
+    with h5py.File('embeddings\\Embeddings_128_soc-sign-bitcoinalpha.h5', 'r') as f:
+        embeddings_alpha = np.array(f.get('Embeddings'))
+
+    df_train_otc = pd.read_csv("datasets\\train_soc-sign-bitcoinotc.csv")
+    df_test_otc = pd.read_csv("datasets\\test_soc-sign-bitcoinotc.csv")
+    df_train_alpha = pd.read_csv("datasets\\train_soc-sign-bitcoinalpha.csv")
+    df_test_alpha = pd.read_csv("datasets\\test_soc-sign-bitcoinalpha.csv")
+
+    print(embeddings_otc.shape)
+    print(embeddings_alpha.shape)
+    print(df_test_otc.shape, df_test_alpha.shape)
+    print("\n")
+    print("Prediction Scores for bitcoin OTC dataset")
+    predictMetrics(embeddings_otc, df_train_otc, df_test_otc)
+
+    print("\n")
+    print("Prediction Scores for bitcoin alpha dataset")
+    predictMetrics(embeddings_alpha, df_train_alpha, df_test_alpha)
+
+

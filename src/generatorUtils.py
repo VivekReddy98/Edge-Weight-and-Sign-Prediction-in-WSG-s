@@ -39,12 +39,12 @@ class preprocessed_graph:
 		self.sources = self.get_new_source_ids(old_dataframe,old_new_node_map)
 		self.targets = self.get_new_target_ids(old_dataframe,old_new_node_map)
 		self.weights = old_dataframe.weight.tolist()
-		self.edges = tuple(zip(self.sources,self.targets,map(lambda x: {'weight':x},self.weights)))
-		d = {colnames[0]:self.sources, colnames[1]:self.targets, colnames[2]:self.targets}
+		self.edges = tuple(zip(self.sources,self.targets,map(lambda x: {'weight':x}, self.weights)))
+		d = {colnames[0]:self.sources, colnames[1]:self.targets, colnames[2]:self.weights}
 		graph_dataframe = pd.DataFrame(data=d)
 		self.df_train, self.df_test = train_test_split(graph_dataframe, test_size=0.2)
-		self.df_test.to_csv(os.path.join(os.path.split(path)[0], "test_{}".format(os.path.split(path)[1])))
-		self.df_test.to_csv(os.path.join(os.path.split(path)[0], "train_{}".format(os.path.split(path)[1])))
+		self.df_test.reset_index().to_csv(os.path.join(os.path.split(path)[0], "test_{}".format(os.path.split(path)[1])))
+		self.df_train.reset_index().to_csv(os.path.join(os.path.split(path)[0], "train_{}".format(os.path.split(path)[1])))
 
 	def get_new_source_ids(self,old_dataframe,old_new_node_map):
 		old_sources = old_dataframe.source.tolist()
