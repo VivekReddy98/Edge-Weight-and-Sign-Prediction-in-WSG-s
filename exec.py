@@ -3,9 +3,10 @@ from src.sgcnLayers import DS, Layer0, LayerIntermediate, LayerLast
 from src.generatorUtils import parseInput, pairGenerator, dataGen
 from src.sgcn import sgcn, Trainable_Weights, BackProp
 import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 from tensorflow.keras.optimizers import *
-#tf.disable_eager_execution()
+tf.disable_eager_execution()
 
 #https://github.com/tensorflow/tensorflow/issues/28287
 global sess
@@ -75,8 +76,13 @@ with sess.as_default():
 			#print(v)
 		print("Going into the Loss Function")
 
+
+		with tf.GradientTape() as tape:
+			grads = tape.gradient(bckProp.loss_, bckProp.var_list)
+
+		
 		''' Final Layer Embeddings Generated From Previous layer is used to run the loss '''
-		out_loss = sess.run([bckProp.optimizer.minimize(bckProp.loss_, bckProp.var_list), bckProp.MLGloss(), bckProp.BTlossPos(), bckProp.BTlossNeg()], 
+		out_loss = sess.run([model.optimizer.apply_gradients(zip(grads, bckProp.var_list))], 
 										feed_dict={bckProp.twins: feed_dict['twins_X'],
 												   bckProp.one_hot_encode: feed_dict['twins_Y'].astype(np.float32),
 												   bckProp.pos_triplets: feed_dict['pos_triplets'],
@@ -89,7 +95,5 @@ with sess.as_default():
 		#writer = tf.summary.FileWriter("datasets\\", graph=graph)
 		
 		'''
-		with tf.GradientTape() as tape:
-			grads = tape.gradient(model.loss, model.var_list)
-		model.optimizer.apply_gradients(zip(grads, model.trainable_variables))
+		
 		'''
