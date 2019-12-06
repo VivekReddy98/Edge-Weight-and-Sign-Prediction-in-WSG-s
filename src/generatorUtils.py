@@ -111,7 +111,7 @@ class parseInput():
 		for i in range(0,len(w)):
 		    v_sorted_T.append(v[:,w_argsort[i]])
 		v_sorted = np.array(v_sorted_T).T
-		X = v_sorted[:,:64]
+		X = v_sorted[:,4:68]
 		return X
 
 
