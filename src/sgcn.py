@@ -47,7 +47,7 @@ class sgcn():
 		self.h0 = init.initialEmbeddings(name="Pre_Generated_Embeddings", values=values)
 		self.WB = init.weightsLayer1N(name="Weights_Balanced")
 		self.WU = init.weightsLayer1N(name='Weights_Unbalanced')
-		self.zUB = init.Embeddings(name='Concat_Embeddings')
+		self.zUB = init.Embeddings(name='Concat_Embeddings', trainable=True)
 		self.MLG = init.weightsMLG(name='weights_for_Multinomial_Logistic_Regression')
 
 		self.var_list = [self.WU0, self.WB0, self.WB, self.WU, self.MLG] # Trainable Variable defined as a list, to be passed into the Optimizer.
@@ -55,11 +55,11 @@ class sgcn():
 		''' Initializing Layers and Layer Specific Remaining Weights'''
 		self.Layers.append(Layer0(self.h0, self.WU0, self.WB0, self.adj_pos, self.adj_neg))
 		for i in range(1,num_L):
-			self.H.U.append(init.interEmbeddings(name='Embeddings_UnBalanced_'+str(i)))
-			self.H.B.append(init.interEmbeddings(name='Embeddings_Balanced_'+str(i)))
+			self.H.U.append(init.interEmbeddings(name='Embeddings_UnBalanced_'+str(i), trainable=True))
+			self.H.B.append(init.interEmbeddings(name='Embeddings_Balanced_'+str(i), trainable=True))
 			self.Layers.append(LayerIntermediate(i, self.WB, self.WU, self.adj_pos, self.adj_neg))
-		self.H.U.append(init.interEmbeddings(name='Embeddings_UnBalanced_'+str(i+1)))
-		self.H.B.append(init.interEmbeddings(name='Embeddings_Balanced_'+str(i+1)))
+		self.H.U.append(init.interEmbeddings(name='Embeddings_UnBalanced_'+str(i+1),trainable=True))
+		self.H.B.append(init.interEmbeddings(name='Embeddings_Balanced_'+str(i+1), trainable=True))
 		self.Layers.append(LayerLast(num_L-1))
 		return None
 
@@ -77,18 +77,18 @@ class sgcn():
 
 	# MLG Loss defnied
 	def MLGloss(self, **kwargs):
-		return tf.math.reduce_sum(self.zUB)
-		# zi = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.twins, [0,0], [-1,1]), [tf.shape(self.twins)[0], 1]))
-		# zj = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.twins, [0,1], [-1,1]), [tf.shape(self.twins)[0], 1]))
-		# zij = tf.concat([zi, zj], 1)
-		# return zij
-		#eij = tf.math.exp(tf.matmul(zij, self.MLG, transpose_b=True)) #Batch_size, 3
+		#return tf.math.reduce_sum(self.zUB)
+		zi = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.twins, [0,0], [-1,1]), [tf.shape(self.twins)[0], 1]))
+		zj = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.twins, [0,1], [-1,1]), [tf.shape(self.twins)[0], 1]))
+		zij = tf.concat([zi, zj], 1)
+		#return zij
+		eij = tf.math.exp(tf.matmul(zij, self.MLG, transpose_b=True)) #Batch_size, 3
 		
-		# eij_mask = tf.math.multiply(eij, self.one_hot_encode)
-		# eij = tf.math.reciprocal_no_nan(tf.math.reduce_sum(eij, axis=1))
-		# eij_mask = tf.math.reduce_sum(eij_mask, axis=1)
-		# mlg = tf.math.divide(tf.reduce_sum(tf.math.log(tf.math.multiply_no_nan(eij, eij_mask)), axis=0), tf.dtypes.cast(tf.shape(self.twins)[0], dtype=tf.float32))
-		# return tf.math.scalar_mul(tf.constant(-1, dtype=tf.float32), mlg)
+		eij_mask = tf.math.multiply(eij, self.one_hot_encode)
+		eij = tf.math.reciprocal_no_nan(tf.math.reduce_sum(eij, axis=1))
+		eij_mask = tf.math.reduce_sum(eij_mask, axis=1)
+		mlg = tf.math.divide(tf.reduce_sum(tf.math.log(tf.math.multiply_no_nan(eij, eij_mask)), axis=0), tf.dtypes.cast(tf.shape(self.twins)[0], dtype=tf.float32))
+		return tf.math.scalar_mul(tf.constant(-1, dtype=tf.float32), mlg)
 
 	# Balance Theory Loss Specified in the Paper for Positive Triplets
 	def BTlossPos(self):
@@ -123,7 +123,7 @@ class sgcn():
 		MLG_L = tf.norm(self.MLG, ord='euclidean')
 		Z = tf.add(tf.norm(self.WU, ord='euclidean'), tf.norm(self.WB, ord='euclidean'))
 		Z0 = tf.add(tf.norm(self.WU0, ord='euclidean'), tf.norm(self.WB0, ord='euclidean'))
-		return tf.math.reduce_sum(tf.stack([MLG_L, Z, Z0]))
+		return tf.add(tf.add(MLG_L, Z), Z0)
 
 if __name__ == "__main__":
 	with tf.Session() as sess:

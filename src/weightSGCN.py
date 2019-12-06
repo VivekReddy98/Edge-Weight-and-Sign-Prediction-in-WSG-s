@@ -28,29 +28,28 @@ class weightSGCN():
 	def initialEmbeddings(self, name, values):
 		''' Initial Embeddings generated from Signed Spectral Embeddings shape: N, d_in'''
 		size = (self.N, self.d_in)
-		trainable = self.trainable
+		trainable = False
 		print("TF Variable initilized with name: {}, Trainable: Definitely {}, shape: {}".format(name, str(trainable), size))
 		if values.shape != size:
 			raise Exception("Error is the size of input array given")
 		#initial = tf.convert_to_tensor(values)
 		return tf.constant(values, name=name)
 
-	def interEmbeddings(self, name, variant='glorot'):
+	def interEmbeddings(self, name, variant='glorot', trainable = False):
 		''' Intermedite Node Embeddings for all the layers: 3-D Tensor, shape:  #Nodes, d_out, (Create this for every Layer initiated) '''
 		shape = (self.N, self.d_out)
-		trainable = False
 		print("TF Variable initilized with name: {}, Trainable: {}, shape: {}".format(name, str(trainable), shape))
 		
 		with tf.compat.v1.variable_scope("embed"):
-			return glorot(shape, name=name, trainable=False)
+			return glorot(shape, name=name, trainable=trainable)
 			
-	def Embeddings(self, name, variant='glorot'):
+	def Embeddings(self, name, variant='glorot', trainable = False):
 		''' Final Concantenated output Embeddings: 2-D Tensor, Shape: #Nodes, 2*d_out'''
 		shape = (self.N, 2*self.d_out)
 		trainable = False
 		print("TF Variable initilized with name: {}, Trainable: {}, shape: {}".format(name, str(trainable), shape))
 		with tf.compat.v1.variable_scope("embed"):
-			return glorot(shape, name=name, trainable=False)
+			return glorot(shape, name=name, trainable=trainable)
 
 	def weightsMLG(self, name, variant='glorot'):
 		''' Multinomial Logistic Regression Weights : 2-D tensor, shape = 3(+, -, ?), d_in'''

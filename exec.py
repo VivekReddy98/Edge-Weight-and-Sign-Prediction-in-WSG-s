@@ -33,7 +33,7 @@ with graph.as_default():
 	model = sgcn(lambdaa=0.5, learning_rate=0.005)
 	model.build(4, G.adj_pos, G.adj_neg, 32, G.X.astype(np.float32))
 	model.forwardPass()
-
+	writer = tf.compat.v1.summary.FileWriter("datasets\\", graph=graph)
 	'''
 	1) Running the model for number of epochs given
 	2) For every Epoch, a feed dict with necessary values is created to be fed into the computation graph 
@@ -51,7 +51,12 @@ with graph.as_default():
 		print("................................................................................................................................")
 		print("Epoch : {}".format(i))
 		feed_dict = next(itr)
-		
+		variables_names = [v.name for v in tf.compat.v1.trainable_variables()]
+		values = sess.run(variables_names)
+		for k, v in zip(variables_names, values):
+			print("Variable: ", k)
+			print("Shape: ", v.shape)
+			#print(v)
 		print("Going into the Loss Function")
 
 		#LOSS = tf.function(model.loss)
@@ -59,7 +64,7 @@ with graph.as_default():
 		#print(sess.run(model.MLGloss(ses=sess)))
 		#print(sess.run(model.BTlossPos()))
 		#print(sess.run(model.BTlossNeg()))
-		out_loss = sess.run([model.MLGloss(),model.BTlossPos(), model.BTlossNeg(), model.loss], feed_dict={model.twins: feed_dict['twins_X'],
+		out_loss = sess.run([model.MLGloss(), model.BTlossPos(), model.BTlossNeg(), model.loss], feed_dict={model.twins: feed_dict['twins_X'],
 													model.one_hot_encode: feed_dict['twins_Y'].astype(np.float32),
 													model.pos_triplets: feed_dict['pos_triplets'],
 													model.neg_triplets: feed_dict['neg_triplets'],
@@ -67,10 +72,20 @@ with graph.as_default():
 													model.end: np.array(feed_dict['range'][1]).astype(np.int32)
 												  })
 		print(out_loss)
-		
-		outs = sess.run(model.optimizer.minimize(model.loss_, tf.compat.v1.train.get_or_create_global_step(), model.var_list))
+		writer = tf.compat.v1.summary.FileWriter("datasets\\", graph=graph)
+		# with tf.GradientTape() as tape:
+		# 	grads = tape.gradient(model.loss, model.var_list)
 
-		print(outs)
+		# #optimizer.apply_gradients(zip(grads, model.trainable_variables))
+
+		# outs = sess.run(model.optimizer.apply_gradients(zip(grads, model.var_list)), feed_dict={model.twins: feed_dict['twins_X'],
+		# 																											model.one_hot_encode: feed_dict['twins_Y'].astype(np.float32),
+		# 																											model.pos_triplets: feed_dict['pos_triplets'],
+		# 																											model.neg_triplets: feed_dict['neg_triplets'],
+		# 																											model.start: np.array(feed_dict['range'][0]).astype(np.int32),
+		# 																											model.end: np.array(feed_dict['range'][1]).astype(np.int32)
+		# 																										})
+		# print(outs)
 
 
 
