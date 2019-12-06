@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 import random
-from sklearn.preprocessing import OneHotEncoder
 import os, os.path
 from numpy import linalg as LA
 import networkx as nx

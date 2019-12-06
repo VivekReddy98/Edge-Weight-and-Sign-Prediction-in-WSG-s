@@ -26,7 +26,7 @@ class Trainable_Weights:
 		self.WB = self.init.weightsLayer1N(name="Weights_Balanced")
 		self.WU = self.init.weightsLayer1N(name='Weights_Unbalanced')
 		self.MLG = self.init.weightsMLG(name='weights_for_Multinomial_Logistic_Regression')
-
+		
 class BackProp:
 	def __init__(self, Weights, **kwargs):
 		
@@ -46,20 +46,15 @@ class BackProp:
 
 		''' Inputs are final Layer embeddings generated from previous graph'''
 		self.var_list = [self.W.WU0, self.W.WB0, self.W.WB, self.W.WU, self.W.MLG]
-
+		self.loss = tf.add(tf.add(self.MLGloss(), tf.add(self.BTlossPos(), self.BTlossNeg())), self.RegLoss())
+		#self.loss = self.RegLoss()
 		''' Optimizer '''
-		self.optimizer = tf.keras.optimizers.SGD(learning_rate=kwargs['learning_rate'], momentum=0.0)
-
-		# beta_1=0.9,
-		# 																				beta_2=0.999,
-		# 																				epsilon=1e-07,
-		# 																				amsgrad=False,
-		# 																				name='Adam'
+		self.optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=kwargs['learning_rate'])
 
 	#Loss Defined 
 	def loss_(self):
-		return tf.add(tf.add(self.MLGloss(), tf.add(self.BTlossPos(), self.BTlossNeg())), self.RegLoss())
-
+		return tf.add(tf.add(self.MLGloss()), self.RegLoss()) #tf.add(self.BTlossPos(), self.BTlossNeg())
+ 
 	# MLG Loss defnied
 	def MLGloss(self):
 		zi = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.twins, [0,0], [-1,1]), [tf.shape(self.twins)[0], 1]))
