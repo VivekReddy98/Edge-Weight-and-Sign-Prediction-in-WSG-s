@@ -5,15 +5,15 @@ from src.sgcn import sgcn, Trainable_Weights, BackProp
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras.optimizers import *
-#tf.compat.v1.disable_eager_execution()
+#tf.disable_eager_execution()
 
 #https://github.com/tensorflow/tensorflow/issues/28287
 global sess
 global graph
 
-sess = tf.compat.v1.Session()
-#sess = tf.compat.v1.keras.backend.get_session()
-graph = tf.compat.v1.get_default_graph()
+sess = tf.Session()
+#sess = tf.keras.backend.get_session()
+graph = tf.get_default_graph()
 
 epochs = 20
 # Pre-req's for the model
@@ -31,7 +31,7 @@ with sess.as_default():
 	#https://github.com/tensorflow/tensorflow/issues/28287
 	#https://github.com/tensorflow/tensorflow/issues/24371
 
-	tf.compat.v1.keras.backend.set_session(sess)
+	tf.keras.backend.set_session(sess)
 
 	print("\n")
 	print(''' Build the Computation Graphs (Both are Isolated, Back Prop Takes zUB as an input, although obviously they share Weights) for Forward Pass and BackPropagation''')
@@ -47,7 +47,7 @@ with sess.as_default():
 	bckProp = BackProp(Weights, l1=5, l2=0.02, learning_rate=0.001)
 
 	''' Initialize all the Variables '''
-	sess.run(tf.compat.v1.global_variables_initializer())
+	sess.run(tf.global_variables_initializer())
 
 	''' Start The Execution '''
 	for i in range(0, epochs):
@@ -67,7 +67,7 @@ with sess.as_default():
 
 		print("\n")
 		print(''' A Sanity Check to check all the Trainable Variables Defined ''')
-		variables_names = [v.name for v in tf.compat.v1.trainable_variables()]
+		variables_names = [v.name for v in tf.trainable_variables()]
 		values = sess.run(variables_names)
 		for k, v in zip(variables_names, values):
 			print("Variable: ", k)
@@ -86,7 +86,7 @@ with sess.as_default():
 												   bckProp.zUB: Final_Layer_Embeddings.astype(np.float32)
 												  })
 		print(out_loss)
-		#writer = tf.compat.v1.summary.FileWriter("datasets\\", graph=graph)
+		#writer = tf.summary.FileWriter("datasets\\", graph=graph)
 		
 		'''
 		with tf.GradientTape() as tape:
