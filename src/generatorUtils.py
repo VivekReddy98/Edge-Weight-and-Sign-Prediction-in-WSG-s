@@ -86,41 +86,23 @@ class preprocessed_graph:
 
 class parseInput():
 	def __init__(self, path, D_in, column_names=['src', 'dst', 'rating', 'time']):
-		self.df = pd.read_csv(path, names=column_names).drop(['time'], axis=1)
-		#self.N = max(self.df['src'].max(axis=0), self.df['dst'].max(axis=0))
-		self.N = 3783
-		self.posG = nx.DiGraph()
-		self.negG = nx.DiGraph()
+		self.prepro = preprocessed_graph(path)
+		self.df = self.prepro.dataframe(colnames=column_names)
+		self.df.head()
+		#self.df.drop('time', axis=1, inplace=True)
+		self.N = max(self.df['src'].max(axis=0), self.df['dst'].max(axis=0))
+		self.DiG = self.prepro.digraph()
+		self.G = self.prepro.graph()
+		adj = nx.to_numpy_matrix(self.G)
+		self.adj_pos = np.where(adj > 0 , adj, 0)
+		self.adj_neg = np.where(adj < 0 , -1*adj, 0)
 		self.path = path
 		self.X = self.create_X(D_in)
-		
-
-	def __generator_function(self, limit):
-		for i in range(0,limit):
-			yield i
 			
-	def create_X(self,D_in):
-		G = nx.read_weighted_edgelist(self.path,delimiter=',',create_using=nx.Graph)
-		L = np.squeeze(np.asarray(nx.laplacian_matrix(G).todense()))
+	def create_X(self, D_in):
+		L = np.squeeze(np.asarray(nx.laplacian_matrix(self.G).todense()))
 		X = L[:,:D_in]
 		return X
-
-	def generate(self):
-		self.DiG = nx.read_weighted_edgelist(self.path,delimiter=',',create_using=nx.DiGraph)
-		adj = nx.to_numpy_matrix(self.DiG)
-		self.adj_pos = np.where(adj >= 0 , adj, 0)
-		self.adj_neg = np.where(adj <= 0 , adj, 0)
-		# itr = self.__generator_function(self.N)
-		# self.posG.add_nodes_from(itr)
-		# self.posG.add_weighted_edges_from(self.df[self.df['rating']>0].values.tolist())
-		# itr = self.__generator_function(self.N)
-		# self.negG.add_nodes_from(itr)
-		# self.posG.add_weighted_edges_from(self.df[self.df['rating']<0].values.tolist())
-		# self.adj_pos = nx.to_numpy_matrix(self.posG)
-		# self.adj_neg = nx.to_numpy_matrix(self.negG)
-		# print(self.N, self.adj_neg.shape[0])
-		print("All Necessary Matrices have been computed")
-		return None
 
 
 class pairGenerator():
@@ -128,23 +110,23 @@ class pairGenerator():
 		self.BS = batch_size
 		self.i = 0
 
-	def genPairs(self, G, neutral_sampling_rate=0.50):
+	def genPairs(self, GraphParser, neutral_sampling_rate=0.50):
 		D = dataGen(self.BS)
-		self.itr = D.gen(G.N)
+		self.itr = D.gen(GraphParser.N)
 		
 		while True:	
 			(start, end) = next(self.itr)
 
-			df = G.df[G.df['src'].isin([i for i in range(start, end+1)])]
+			df = GraphParser.df[GraphParser.df['src'].isin([i for i in range(start, end+1)])]
 			df_pos = df[df['rating']>0]
 			df_neg = df[df['rating']<0]
 			df_neu = pd.DataFrame()
 			df_twins = pd.DataFrame()
-			set_nodes = set(list([i for i in range(0, G.N)]))
+			set_nodes = set(list([i for i in range(0, GraphParser.N)]))
 
 			for i in range(start, end+1):
 				#neigh = set(list(G.DiG.neighbors(i)))
-				neigh = set([])
+				neigh = set([GraphParser.DiG.neighbors(i)])
 				neutral_nodes = set_nodes.difference(neigh)
 				neutral_neigh = list(random.sample(neutral_nodes, int(len(neutral_nodes)*neutral_sampling_rate)))
 				df_neu_temp = pd.DataFrame(neutral_neigh, columns=['dst'])
@@ -154,6 +136,8 @@ class pairGenerator():
 
 
 			df_twins = df_twins.append(pd.concat([df_pos, df_neg, df_neu]))
+
+			df_twins.dropna(inplace=True)
 			df_twins.reset_index(drop=True)
 			df_twins['rating'] = df_twins['rating'].apply(lambda x: 1 if x > 0 else (2 if x < 0 else 0))
 			df_twins = df_twins[['src', 'dst', 'rating']]
@@ -177,8 +161,15 @@ class pairGenerator():
 			df_neu.rename(columns={"dst": "uk"}, inplace=True) 
 
 			df_M_plus = df_pos.sample(frac=0.05).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/5)
-			df_M_minus = df_neg.sample(frac=0.05).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/5)
+			df_M_minus = df_neg.sample(frac=0.20).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/5)
 
+			df_M_plus.dropna(inplace=True)
+
+			df_M_minus.dropna(inplace=True)
+
+
+			print(df_twins_x.shape, df_twins_y.shape, df_M_plus.shape, df_M_minus.shape)
+			
 			feed_dict = {"twins_X":df_twins_x, "twins_Y":df_twins_y, "pos_triplets": df_M_plus.values, "neg_triplets": df_M_minus.values, "range": (start, end)}
 			yield feed_dict
 			break

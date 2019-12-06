@@ -30,7 +30,7 @@ class sgcn():
 		self.l = tf.constant(kwargs['lambdaa'], dtype=tf.float32, name="lambda")
 
 		''' Optimizer '''
-		self.optimizer = tf.optimizers.Adam() #learning_rate=kwargs['learning_rate']
+		self.optimizer = tf.compat.v2.optimizers.SGD() #learning_rate=kwargs['learning_rate']
 		
 		#self.build(kwargs['num_L'], kwargs['adj_pos'], kwargs['adj_neg'], kwargs['d_out'], kwargs['values'])
 
@@ -68,23 +68,27 @@ class sgcn():
 			self.H = self.Layers[index].call(self.H, self.start, self.end)
 		self.zUB = self.Layers[-1].call(self.H)
 		self.loss = tf.add(tf.add(self.MLGloss(), tf.add(self.BTlossPos(), self.BTlossNeg())), self.RegLoss())
+		
 		return None
 
 	#Loss Defined 
-	def loss(self):
-		return self.loss
+	def loss_(self):
+		return tf.add(tf.add(self.MLGloss(), tf.add(self.BTlossPos(), self.BTlossNeg())), self.RegLoss())
 
 	# MLG Loss defnied
-	def MLGloss(self):
-		zi = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.twins, [0,0], [-1,1]), [tf.shape(self.twins)[0], 1]))
-		zj = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.twins, [0,1], [-1,1]), [tf.shape(self.twins)[0], 1]))
-		zij = tf.concat([zi, zj], 1)
-		eij = tf.math.exp(tf.matmul(zij, self.MLG, transpose_b=True)) #Batch_size, 3
-		eij_mask = tf.math.multiply(eij, self.one_hot_encode)
-		eij = tf.math.reciprocal(tf.math.reduce_sum(eij, axis=1))
-		eij_mask = tf.math.reduce_sum(eij_mask, axis=1)
-		mlg = tf.math.divide(tf.reduce_sum(tf.math.log(tf.math.multiply_no_nan(eij, eij_mask)), axis=0), tf.dtypes.cast(tf.shape(self.twins)[0], dtype=tf.float32))
-		return tf.math.scalar_mul(tf.constant(-1, dtype=tf.float32), mlg)
+	def MLGloss(self, **kwargs):
+		return tf.math.reduce_sum(self.zUB)
+		# zi = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.twins, [0,0], [-1,1]), [tf.shape(self.twins)[0], 1]))
+		# zj = tf.gather_nd(self.zUB, tf.reshape(tf.slice(self.twins, [0,1], [-1,1]), [tf.shape(self.twins)[0], 1]))
+		# zij = tf.concat([zi, zj], 1)
+		# return zij
+		#eij = tf.math.exp(tf.matmul(zij, self.MLG, transpose_b=True)) #Batch_size, 3
+		
+		# eij_mask = tf.math.multiply(eij, self.one_hot_encode)
+		# eij = tf.math.reciprocal_no_nan(tf.math.reduce_sum(eij, axis=1))
+		# eij_mask = tf.math.reduce_sum(eij_mask, axis=1)
+		# mlg = tf.math.divide(tf.reduce_sum(tf.math.log(tf.math.multiply_no_nan(eij, eij_mask)), axis=0), tf.dtypes.cast(tf.shape(self.twins)[0], dtype=tf.float32))
+		# return tf.math.scalar_mul(tf.constant(-1, dtype=tf.float32), mlg)
 
 	# Balance Theory Loss Specified in the Paper for Positive Triplets
 	def BTlossPos(self):
@@ -98,7 +102,7 @@ class sgcn():
 		subijk = tf.math.subtract(uij,uik)
 		bool_sub = tf.greater_equal(subijk, 0.)
 		zero_tf = tf.zeros(shape=tf.shape(bool_sub), dtype=tf.float32)
-		return tf.math.scalar_mul(self.l, tf.math.divide(tf.reduce_sum(tf.where(bool_sub, subijk, zero_tf), axis=0), tf.dtypes.cast(tf.shape(self.pos_triplets)[0], dtype=tf.float32)))
+		return tf.math.scalar_mul(self.l, tf.math.divide_no_nan(tf.reduce_sum(tf.where(bool_sub, subijk, zero_tf), axis=0), tf.dtypes.cast(tf.shape(self.pos_triplets)[0], dtype=tf.float32)))
 
 	# Balance Theory Loss Specified in the Paper for Negative Triplets
 	def BTlossNeg(self):
@@ -112,7 +116,7 @@ class sgcn():
 		subijk = tf.math.subtract(uij,uik)
 		bool_sub = tf.greater_equal(subijk, 0.)
 		zero_tf = tf.zeros(shape=tf.shape(bool_sub), dtype=tf.float32)
-		return tf.math.scalar_mul(self.l, tf.math.divide(tf.reduce_sum(tf.where(bool_sub, subijk, zero_tf), axis=0), tf.dtypes.cast(tf.shape(self.neg_triplets)[0], dtype=tf.float32)))
+		return tf.math.scalar_mul(self.l, tf.math.divide_no_nan(tf.reduce_sum(tf.where(bool_sub, subijk, zero_tf), axis=0), tf.dtypes.cast(tf.shape(self.neg_triplets)[0], dtype=tf.float32)))
 
 	# Regularization Loss Defined in the Paper (Used euclidean norm)
 	def RegLoss(self):

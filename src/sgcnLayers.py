@@ -42,6 +42,7 @@ class Layer0():
 		print(mask_pos_neigh, self.h0, self.adj_pos)
 		sum_pos_vectors = tf.matmul(mask_pos_neigh, self.h0, transpose_b=False) # shape = b, d_in
 		sum_pos_vectors = sum_pos_vectors / tf.reshape(sum_neigh, (-1, 1)) # Shape = b, d_in
+		sum_pos_vectors = tf.where(tf.math.is_nan(sum_pos_vectors), tf.zeros(tf.shape(sum_pos_vectors)), sum_pos_vectors)
 		pos_vectors = tf.concat([sum_pos_vectors, self_vectors], 1) #shape = b, 2*d_in
 		
   
@@ -50,6 +51,7 @@ class Layer0():
 		sum_neigh = tf.reduce_sum(mask_neg_neigh, 1)    # shape = b, 1
 		sum_neg_vectors = tf.matmul(mask_neg_neigh, self.h0, transpose_b=False) # shape = b, d_in
 		sum_neg_vectors = sum_neg_vectors / tf.reshape(sum_neigh, (-1, 1)) # Shape = b, d_in
+		sum_neg_vectors = tf.where(tf.math.is_nan(sum_neg_vectors), tf.zeros(tf.shape(sum_neg_vectors)), sum_neg_vectors)
 		neg_vectors = tf.concat([sum_neg_vectors, self_vectors], 1) #shape = b, 2*d_in
 
 		indices = tf.reshape(tf.range(start, end, delta=1, dtype=tf.int32), (-1, 1))
@@ -94,12 +96,13 @@ class LayerIntermediate():
 		mask_neigh_P = tf.slice(adj_pos, [start,0], [range_elements,-1]) # shape = b, N where b = batch_size
 		sum_neigh_P = tf.reduce_sum(mask_neigh_P, 1)    # shape = b, 1
 		sum_embeddings_P = tf.matmul(mask_neigh_P, H.B[self.Lid-1]) / tf.reshape(sum_neigh_P, (-1, 1)) # shape = b, d_out 
-		
+		sum_embeddings_P = tf.where(tf.math.is_nan(sum_embeddings_P), tf.zeros(tf.shape(sum_embeddings_P)), sum_embeddings_P)
+
 		# Negative Neighbours, (Balanced or Unbalanced Weights depends on the value of U)
 		mask_neigh_N = tf.slice(adj_neg, [start,0], [range_elements,-1]) # shape = b, N where b = batch_size
 		sum_neigh_N = tf.reduce_sum(mask_neigh_N, 1)    # shape = b, 1
 		sum_embeddings_N = tf.matmul(mask_neigh_N, H.U[self.Lid-1]) / tf.reshape(sum_neigh_N, (-1, 1)) # shape = b, d_out
-
+		sum_embeddings_N = tf.where(tf.math.is_nan(sum_embeddings_N), tf.zeros(tf.shape(sum_embeddings_N)), sum_embeddings_N)
 		# Concat the found vectors
 		concat_vector = tf.concat([sum_embeddings_P, sum_embeddings_N, self_embeddings], 1) #shape = b, 3*d_out
 		
@@ -124,12 +127,12 @@ class LayerIntermediate():
 		mask_neigh_P = tf.slice(adj_pos, [start,0], [range_elements,-1]) # shape = b, N where b = batch_size
 		sum_neigh_P = tf.reduce_sum(mask_neigh_P, 1)    # shape = b, 1
 		sum_embeddings_P = tf.matmul(mask_neigh_P, H.U[self.Lid-1]) / tf.reshape(sum_neigh_P, (-1, 1)) # shape = b, d_out 
-		
+		sum_embeddings_P = tf.where(tf.math.is_nan(sum_embeddings_P), tf.zeros(tf.shape(sum_embeddings_P)), sum_embeddings_P)
 		# Negative Neighbours, (Balanced or Unbalanced Weights depends on the value of U)
 		mask_neigh_N = tf.slice(adj_neg, [start,0], [range_elements,-1]) # shape = b, N where b = batch_size
 		sum_neigh_N = tf.reduce_sum(mask_neigh_N, 1)    # shape = b, 1
 		sum_embeddings_N = tf.matmul(mask_neigh_N, H.B[self.Lid-1]) / tf.reshape(sum_neigh_N, (-1, 1)) # shape = b, d_out
-
+		sum_embeddings_N = tf.where(tf.math.is_nan(sum_embeddings_N), tf.zeros(tf.shape(sum_embeddings_N)), sum_embeddings_N)
 		# Concat the found vectors
 		concat_vector = tf.concat([sum_embeddings_P, sum_embeddings_N, self_embeddings], 1) #shape = b, 3*d_out
 		
@@ -148,11 +151,11 @@ class LayerLast():
 		self.name_ = "End Layer_" + str(self.Lid)
 		print("Layer with Name {} initialized ".format(self.name_))
 
-	def call(self, H, start, end, **kwargs):
+	def call(self, H, **kwargs):
 		# H: The Data Structure containing UB and B embeddings in a list form.
-		indices = tf.reshape(tf.range(start, end, delta=1, dtype=tf.int32), (-1, 1))
+		#indices = tf.reshape(tf.range(start, end, delta=1, dtype=tf.int32), (-1, 1))
 		zUB = tf.concat([H.B[self.Lid-1], H.U[self.Lid-1]], axis=1)
-		zUB = tf.compat.v1.scatter_nd_update(zUB, indices, tf.nn.relu(tf.matmul(concat_vector, sliced_weights, transpose_b=True)))
+		#zUB = tf.compat.v1.scatter_nd_update(zUB, indices, tf.nn.relu(tf.matmul(concat_vector, sliced_weights, transpose_b=True)))
 		return zUB
 
 
