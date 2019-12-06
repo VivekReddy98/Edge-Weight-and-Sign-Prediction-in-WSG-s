@@ -100,8 +100,18 @@ class parseInput():
 		self.X = self.create_X(D_in)
 			
 	def create_X(self, D_in):
-		L = np.squeeze(np.asarray(nx.laplacian_matrix(self.G).todense()))
-		X = L[:,:D_in]
+		A = np.squeeze(np.asarray(nx.adjacency_matrix(self.G).todense()))
+		degrees = abs(A).sum(axis=1)
+		D = np.diag(degrees)
+		L = D - A
+		w,v = LA.eig(L)
+		w,v = np.real(w),np.real(v) #removing imaginary parts caused due to roundoff
+		w_argsort = w.argsort()
+		v_sorted_T = []
+		for i in range(0,len(w)):
+		    v_sorted_T.append(v[:,w_argsort[i]])
+		v_sorted = np.array(v_sorted_T).T
+		X = v_sorted[:64]
 		return X
 
 
