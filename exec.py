@@ -4,13 +4,15 @@ from src.generatorUtils import parseInput, pairGenerator, dataGen
 from src.sgcn import sgcn, Trainable_Weights, BackProp
 import tensorflow as tf
 import numpy as np
-tf.compat.v1.disable_eager_execution()
+from tensorflow.keras.optimizers import *
+#tf.compat.v1.disable_eager_execution()
 
 #https://github.com/tensorflow/tensorflow/issues/28287
 global sess
 global graph
 
 sess = tf.compat.v1.Session()
+#sess = tf.compat.v1.keras.backend.get_session()
 graph = tf.compat.v1.get_default_graph()
 
 epochs = 20
@@ -21,7 +23,13 @@ itr = pairGenerator(batch_size=20).genPairs(G)
 ## Inital Embedding Computed using various methods
 #values = np.random.rand(G.N, 256).astype(np.float32)
 
-with graph.as_default():
+with sess.as_default():
+
+	#https://github.com/tensorflow/cleverhans/issues/1117
+	#https://github.com/horovod/horovod/issues/511
+	#https://github.com/keras-team/keras/issues/13550
+	#https://github.com/tensorflow/tensorflow/issues/28287
+	#https://github.com/tensorflow/tensorflow/issues/24371
 
 	tf.compat.v1.keras.backend.set_session(sess)
 
@@ -41,18 +49,6 @@ with graph.as_default():
 	''' Initialize all the Variables '''
 	sess.run(tf.compat.v1.global_variables_initializer())
 
-
-	print("\n")
-	print(''' A Sanity Check to check all the Trainable Variables Defined ''')
-	variables_names = [v.name for v in tf.compat.v1.trainable_variables()]
-	values = sess.run(variables_names)
-	for k, v in zip(variables_names, values):
-		print("Variable: ", k)
-		print("Shape: ", v.shape)
-		#print(v)
-	print("Going into the Loss Function")
-
-
 	''' Start The Execution '''
 	for i in range(0, epochs):
 
@@ -64,8 +60,21 @@ with graph.as_default():
 		Final_Layer_Embeddings = sess.run(zUB, feed_dict={modelfwd.start: np.array(feed_dict['range'][0]).astype(np.int32),
 								   					  modelfwd.end: np.array(feed_dict['range'][1]).astype(np.int32)})
 
-		
+		#Final_Layer_Embeddings = np.ones((3783, 64))
+
 		print(np.sum(Final_Layer_Embeddings), Final_Layer_Embeddings.shape)
+
+
+		print("\n")
+		print(''' A Sanity Check to check all the Trainable Variables Defined ''')
+		variables_names = [v.name for v in tf.compat.v1.trainable_variables()]
+		values = sess.run(variables_names)
+		for k, v in zip(variables_names, values):
+			print("Variable: ", k)
+			print("Shape: ", v.shape)
+			#print(v)
+		print("Going into the Loss Function")
+
 		''' Final Layer Embeddings Generated From Previous layer is used to run the loss '''
 		out_loss = sess.run([bckProp.optimizer.minimize(bckProp.loss_, bckProp.var_list), bckProp.MLGloss(), bckProp.BTlossPos(), bckProp.BTlossNeg()], 
 										feed_dict={bckProp.twins: feed_dict['twins_X'],

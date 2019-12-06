@@ -48,7 +48,13 @@ class BackProp:
 		self.var_list = [self.W.WU0, self.W.WB0, self.W.WB, self.W.WU, self.W.MLG]
 
 		''' Optimizer '''
-		self.optimizer = tf.keras.optimizers.Adam(learning_rate=kwargs['learning_rate'])
+		self.optimizer = tf.keras.optimizers.SGD(learning_rate=kwargs['learning_rate'], momentum=0.0)
+
+		# beta_1=0.9,
+		# 																				beta_2=0.999,
+		# 																				epsilon=1e-07,
+		# 																				amsgrad=False,
+		# 																				name='Adam'
 
 	#Loss Defined 
 	def loss_(self):

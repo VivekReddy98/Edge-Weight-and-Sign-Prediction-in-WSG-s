@@ -135,7 +135,7 @@ class pairGenerator():
 				df_neu = df_neu.append(df_neu_temp.sample(frac=0.2))
 
 
-			df_twins = df_twins.append(pd.concat([df_pos, df_neg, df_neu]))
+			df_twins = df_twins.append(pd.concat([df_pos, df_neg, df_neu], sort=True))
 
 			df_twins.dropna(inplace=True)
 			df_twins.reset_index(drop=True)
