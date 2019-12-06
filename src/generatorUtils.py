@@ -172,7 +172,6 @@ class pairGenerator():
 			
 			feed_dict = {"twins_X":df_twins_x, "twins_Y":df_twins_y, "pos_triplets": df_M_plus.values, "neg_triplets": df_M_minus.values, "range": (start, end)}
 			yield feed_dict
-			break
 
 
 

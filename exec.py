@@ -1,7 +1,7 @@
 from src.weightSGCN import weightSGCN
 from src.sgcnLayers import DS, Layer0, LayerIntermediate, LayerLast
 from src.generatorUtils import parseInput, pairGenerator, dataGen
-from src.sgcn import sgcn
+from src.sgcn import sgcn, Trainable_Weights, BackProp
 import tensorflow as tf
 import numpy as np
 tf.compat.v1.disable_eager_execution()
@@ -9,12 +9,12 @@ tf.compat.v1.disable_eager_execution()
 #https://github.com/tensorflow/tensorflow/issues/28287
 global sess
 global graph
+
 sess = tf.compat.v1.Session()
 graph = tf.compat.v1.get_default_graph()
 
-
-# Pre-req's for the model
 epochs = 20
+# Pre-req's for the model
 G = parseInput(path="datasets/soc-sign-bitcoinalpha.csv", D_in=256)
 itr = pairGenerator(batch_size=20).genPairs(G)
 
@@ -25,68 +25,62 @@ with graph.as_default():
 
 	tf.compat.v1.keras.backend.set_session(sess)
 
-	''' 
-	1) Model Initialization 
-	2) Model Build (Stacking Layers)
-	3) Building the Computation graph and loss
-	'''
-	model = sgcn(lambdaa=0.5, learning_rate=0.005)
-	model.build(4, G.adj_pos, G.adj_neg, 32, G.X.astype(np.float32))
-	model.forwardPass()
-	writer = tf.compat.v1.summary.FileWriter("datasets\\", graph=graph)
-	'''
-	1) Running the model for number of epochs given
-	2) For every Epoch, a feed dict with necessary values is created to be fed into the computation graph 
-	'''
-
+	print("\n")
+	print(''' Build the Computation Graphs (Both are Isolated, Back Prop Takes zUB as an input, although obviously they share Weights) for Forward Pass and BackPropagation''')
 	# Initialize all the variables
+	Weights = Trainable_Weights(4, G.adj_pos, G.adj_neg, 32, G.X.astype(np.float32))
+	
+	# Model to compute Node Embeddings
+	modelfwd = sgcn(Weights)
+	modelfwd.build(4) # Num layers
+	zUB = modelfwd.forwardPass()
 
+	# BackProp to Optimize Weights
+	bckProp = BackProp(Weights, l1=5, l2=0.02, learning_rate=0.001)
+
+	''' Initialize all the Variables '''
 	sess.run(tf.compat.v1.global_variables_initializer())
 
-	list_trainable_var = sess.run(tf.compat.v1.trainable_variables())
-	print(len(list_trainable_var))
 
+	print("\n")
+	print(''' A Sanity Check to check all the Trainable Variables Defined ''')
+	variables_names = [v.name for v in tf.compat.v1.trainable_variables()]
+	values = sess.run(variables_names)
+	for k, v in zip(variables_names, values):
+		print("Variable: ", k)
+		print("Shape: ", v.shape)
+		#print(v)
+	print("Going into the Loss Function")
+
+
+	''' Start The Execution '''
 	for i in range(0, epochs):
 
 		print("................................................................................................................................")
 		print("Epoch : {}".format(i))
 		feed_dict = next(itr)
-		variables_names = [v.name for v in tf.compat.v1.trainable_variables()]
-		values = sess.run(variables_names)
-		for k, v in zip(variables_names, values):
-			print("Variable: ", k)
-			print("Shape: ", v.shape)
-			#print(v)
-		print("Going into the Loss Function")
 
-		#LOSS = tf.function(model.loss)
-		print(feed_dict['range'])
-		#print(sess.run(model.MLGloss(ses=sess)))
-		#print(sess.run(model.BTlossPos()))
-		#print(sess.run(model.BTlossNeg()))
-		out_loss = sess.run([model.MLGloss(), model.BTlossPos(), model.BTlossNeg(), model.loss], feed_dict={model.twins: feed_dict['twins_X'],
-													model.one_hot_encode: feed_dict['twins_Y'].astype(np.float32),
-													model.pos_triplets: feed_dict['pos_triplets'],
-													model.neg_triplets: feed_dict['neg_triplets'],
-													model.start: np.array(feed_dict['range'][0]).astype(np.int32),
-													model.end: np.array(feed_dict['range'][1]).astype(np.int32)
+		''' Only Start and End Indexes are Required to run get zUB'''
+		Final_Layer_Embeddings = sess.run(zUB, feed_dict={modelfwd.start: np.array(feed_dict['range'][0]).astype(np.int32),
+								   					  modelfwd.end: np.array(feed_dict['range'][1]).astype(np.int32)})
+
+		
+		print(np.sum(Final_Layer_Embeddings), Final_Layer_Embeddings.shape)
+		''' Final Layer Embeddings Generated From Previous layer is used to run the loss '''
+		out_loss = sess.run([bckProp.optimizer.minimize(bckProp.loss_, bckProp.var_list), bckProp.MLGloss(), bckProp.BTlossPos(), bckProp.BTlossNeg()], 
+										feed_dict={bckProp.twins: feed_dict['twins_X'],
+												   bckProp.one_hot_encode: feed_dict['twins_Y'].astype(np.float32),
+												   bckProp.pos_triplets: feed_dict['pos_triplets'],
+												   bckProp.neg_triplets: feed_dict['neg_triplets'],
+												   bckProp.start: np.array(feed_dict['range'][0]).astype(np.int32),
+												   bckProp.end: np.array(feed_dict['range'][1]).astype(np.int32),
+												   bckProp.zUB: Final_Layer_Embeddings.astype(np.float32)
 												  })
 		print(out_loss)
-		writer = tf.compat.v1.summary.FileWriter("datasets\\", graph=graph)
-		# with tf.GradientTape() as tape:
-		# 	grads = tape.gradient(model.loss, model.var_list)
-
-		# #optimizer.apply_gradients(zip(grads, model.trainable_variables))
-
-		# outs = sess.run(model.optimizer.apply_gradients(zip(grads, model.var_list)), feed_dict={model.twins: feed_dict['twins_X'],
-		# 																											model.one_hot_encode: feed_dict['twins_Y'].astype(np.float32),
-		# 																											model.pos_triplets: feed_dict['pos_triplets'],
-		# 																											model.neg_triplets: feed_dict['neg_triplets'],
-		# 																											model.start: np.array(feed_dict['range'][0]).astype(np.int32),
-		# 																											model.end: np.array(feed_dict['range'][1]).astype(np.int32)
-		# 																										})
-		# print(outs)
-
-
-
-
+		#writer = tf.compat.v1.summary.FileWriter("datasets\\", graph=graph)
+		
+		'''
+		with tf.GradientTape() as tape:
+			grads = tape.gradient(model.loss, model.var_list)
+		model.optimizer.apply_gradients(zip(grads, model.trainable_variables))
+		'''
