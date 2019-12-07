@@ -1,2 +1,3 @@
 # GDM_Capstone
-Edge Weight Prediction using Signed Graph Convolutional Network using Node Embeddings generated from a custom Signed Graph Convolutional Network written usinf Tensorflow Low-Level Api's and Python 3
+1) Edge Weight Prediction using Node Embeddings generated from a custom Signed Graph Convolutional Network.
+2) The Network was written using Tensorflow Low-Level Api and Python 3.
