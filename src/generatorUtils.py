@@ -31,21 +31,25 @@ class dataGen():
 				a = self.batchIterator()
 
 class preprocessed_graph:
-	def __init__(self,path,colnames):
-		old_dataframe = pd.read_csv(path,names=['source','target','weight'])
+	def __init__(self, path, colnames=['source','target','weight']):
+		self.path = path
+		old_dataframe = pd.read_csv(path, names=colnames)
 		old_nodes = self.get_old_node_ids(old_dataframe)
 		self.nodes = self.get_new_node_ids(old_nodes)
 		old_new_node_map = dict(zip(old_nodes,self.nodes))
-		self.sources = self.get_new_source_ids(old_dataframe,old_new_node_map)
-		self.targets = self.get_new_target_ids(old_dataframe,old_new_node_map)
+		self.sources = self.get_new_source_ids(old_dataframe, old_new_node_map)
+		self.targets = self.get_new_target_ids(old_dataframe, old_new_node_map)
 		self.weights = old_dataframe.weight.tolist()
-		self.edges = tuple(zip(self.sources,self.targets,map(lambda x: {'weight':x}, self.weights)))
-		d = {colnames[0]:self.sources, colnames[1]:self.targets, colnames[2]:self.weights}
-		graph_dataframe = pd.DataFrame(data=d)
-		self.df_train, self.df_test = train_test_split(graph_dataframe, test_size=0.2)
-		self.df_test.reset_index().to_csv(os.path.join(os.path.split(path)[0], "test_{}".format(os.path.split(path)[1])))
-		self.df_train.reset_index().to_csv(os.path.join(os.path.split(path)[0], "train_{}".format(os.path.split(path)[1])))
+		self.edges = tuple(zip(self.sources, self.targets, map(lambda x: {'weight':x}, self.weights)))
+		self.d = {colnames[0]:self.sources, colnames[1]:self.targets, colnames[2]:self.weights}
 
+	def remap(self,old_list, old_new_map):
+		num_nodes_in_list = len(old_list)
+		new_list = old_list
+		for i in range(0,num_nodes_in_list):
+			new_list[i] = old_new_map[old_list[i]]
+		return new_list
+	
 	def get_new_source_ids(self,old_dataframe,old_new_node_map):
 		old_sources = old_dataframe.source.tolist()
 		new_sources = self.remap(old_sources,old_new_node_map)
@@ -56,7 +60,7 @@ class preprocessed_graph:
 		new_targets = self.remap(old_targets,old_new_node_map)
 		return new_targets
 		
-	def get_new_node_ids(self,old_node_ids):
+	def get_new_node_ids(self, old_node_ids):
 		num_nodes = len(old_node_ids)
 		new_node_ids = range(0,num_nodes)
 		return new_node_ids
@@ -67,12 +71,18 @@ class preprocessed_graph:
 		old_node_ids = list(set(old_source_ids).union(set(old_target_ids)))
 		return old_node_ids
 
-	def remap(self,old_list,old_new_map):
-		num_nodes_in_list = len(old_list)
-		new_list = old_list
-		for i in range(0,num_nodes_in_list):
-			new_list[i] = old_new_map[old_list[i]]
-		return new_list
+	def get_new_df(self):
+		self.graph_dataframe = pd.DataFrame(data = self.d)
+		self.df_train, self.df_test = train_test_split(self.graph_dataframe, test_size=0.2)
+		self.df_train.reset_index(drop=True, inplace=True)
+		self.df_test.reset_index(drop=True, inplace=True)
+		return None
+	
+	def save_df(self, dir):
+		self.graph_dataframe.to_csv(os.path.join(dir, "mod_{}".format(os.path.split(self.path)[-1])))
+		self.df_test.to_csv(os.path.join(dir, "test_{}".format(os.path.split(self.path)[-1])))
+		self.df_train.to_csv(os.path.join(dir, "train_{}".format(os.path.split(self.path)[-1])))
+		return None
 
 	def __generator_function(self, limit):
 		for i in range(0,limit):
@@ -98,12 +108,12 @@ class preprocessed_graph:
 		return digraph
 
 class parseInput():
-	def __init__(self, path, D_in, column_names=['src', 'dst', 'rating']):
-		self.prepro = preprocessed_graph(path, colnames=column_names)
+	def __init__(self, path, D_in, prePro, column_names=['source', 'target', 'weight']):
+		self.prepro = prePro 
 		self.df = self.prepro.dataframe()
-		self.df.head()
+		#self.df.head()
 		#self.df.drop('time', axis=1, inplace=True)
-		self.N = max(self.df['src'].max(axis=0), self.df['dst'].max(axis=0))
+		self.N = max(self.df['source'].max(axis=0), self.df['target'].max(axis=0))
 		self.DiG = self.prepro.digraph()
 		self.G = self.prepro.graph()
 		adj = nx.to_numpy_matrix(self.G)
@@ -127,9 +137,8 @@ class parseInput():
 		X = v_sorted[:,4:68]
 		return X
 
-
 class pairGenerator():
-	def __init__(self, batch_size=256):
+	def __init__(self, batch_size=256, ):
 		self.BS = batch_size
 		self.i = 0
 
@@ -140,9 +149,9 @@ class pairGenerator():
 		while True:	
 			(start, end) = next(self.itr)
 
-			df = GraphParser.df[GraphParser.df['src'].isin([i for i in range(start, end+1)])]
-			df_pos = df[df['rating']>0]
-			df_neg = df[df['rating']<0]
+			df = GraphParser.df[GraphParser.df['source'].isin([i for i in range(start, end+1)])]
+			df_pos = df[df['weight']>0]
+			df_neg = df[df['weight']<0]
 			df_neu = pd.DataFrame()
 			df_twins = pd.DataFrame()
 			set_nodes = set(list([i for i in range(0, GraphParser.N)]))
@@ -152,9 +161,9 @@ class pairGenerator():
 				neigh = set([GraphParser.DiG.neighbors(i)])
 				neutral_nodes = set_nodes.difference(neigh)
 				neutral_neigh = list(random.sample(neutral_nodes, int(len(neutral_nodes)*neutral_sampling_rate)))
-				df_neu_temp = pd.DataFrame(neutral_neigh, columns=['dst'])
-				df_neu_temp['src'] = i
-				df_neu_temp['rating'] = 0
+				df_neu_temp = pd.DataFrame(neutral_neigh, columns=['target'])
+				df_neu_temp['source'] = i
+				df_neu_temp['weight'] = 0
 				df_neu = df_neu.append(df_neu_temp.sample(frac=0.2))
 
 
@@ -162,8 +171,8 @@ class pairGenerator():
 
 			df_twins.dropna(inplace=True)
 			df_twins.reset_index(drop=True)
-			df_twins['rating'] = df_twins['rating'].apply(lambda x: 1 if x > 0 else (2 if x < 0 else 0))
-			df_twins = df_twins[['src', 'dst', 'rating']]
+			df_twins['weight'] = df_twins['weight'].apply(lambda x: 1 if x > 0 else (2 if x < 0 else 0))
+			df_twins = df_twins[['source', 'target', 'weight']]
 			#print(df_twins.sample(5))
 
 			df_twins = df_twins.values
@@ -177,14 +186,14 @@ class pairGenerator():
 			
 			#print(df_twins_y.shape, df_twins.shape)
 
-			df_pos = df_pos.drop(['rating'], axis=1)
-			df_neg = df_neg.drop(['rating'], axis=1)
-			df_neu = df_neu.drop(['rating'], axis=1)
+			df_pos = df_pos.drop(['weight'], axis=1)
+			df_neg = df_neg.drop(['weight'], axis=1)
+			df_neu = df_neu.drop(['weight'], axis=1)
 
-			df_neu.rename(columns={"dst": "uk"}, inplace=True) 
+			df_neu.rename(columns={"target": "uk"}, inplace=True) 
 			
-			df_M_plus = df_pos.sample(frac=math.sqrt(self.BS)/self.BS).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/4)
-			df_M_minus = df_neg.sample(frac=math.sqrt(self.BS)/self.BS).merge(df_neu, on='src', how='left').sample(frac=neutral_sampling_rate/4)
+			df_M_plus = df_pos.sample(frac=math.sqrt(self.BS)/self.BS).merge(df_neu, on='source', how='left').sample(frac=neutral_sampling_rate/4)
+			df_M_minus = df_neg.sample(frac=math.sqrt(self.BS)/self.BS).merge(df_neu, on='source', how='left').sample(frac=neutral_sampling_rate/4)
 
 			df_M_plus.dropna(inplace=True)
 

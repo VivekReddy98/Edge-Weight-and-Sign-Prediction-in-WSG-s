@@ -1,4 +1,4 @@
-from sklearn.metrics import explained_variance_score
+from sklearn.metrics import explained_variance_score, r2_score
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn import svm
@@ -18,17 +18,9 @@ def predictMetrics(embeddings, df_train, df_test):
         y_train[i,0] = df_train['rating'].iloc[i]
 
     print(df_test.shape[0])
-    for j in range(0, df_test.shape[0]):
-        try:
-            a = embeddings[int(df_test['src'].iloc[j]),:].tolist()
-            b = embeddings[int(df_test['dst'].iloc[j]),:].tolist()
-            a = a.extend(b)
-            x.append(a)
-        except:
-            pass
-            #print("fucjked")
-            #print(j)
-        y_test[j,0] = int(df_test['rating'].iloc[j])
+    for i in range(0, df_test.shape[0]):
+        test[i,:] = np.append(embeddings[int(df_test['src'].iloc[i])], embeddings[int(df_test['dst'].iloc[i])])
+        y_test[i,0] = df_test['rating'].iloc[i]
     
 
     model = svm.LinearSVR()
@@ -70,7 +62,7 @@ def get_explained_variance_score(embeddings,G):
     return explained_variance_score(y_test,y_pred,multioutput='uniform_average')
 
 if __name__ == "__main__":
-    with h5py.File('embeddings\\Embeddings_128_soc-sign-bitcoinotc_8.h5', 'r') as f:
+    with h5py.File('embeddings\\Embeddings_64_soc-sign-bitcoinotc_8.h5', 'r') as f:
         embeddings_otc = np.array(f.get('Embeddings'))
     
     with h5py.File('embeddings\\Embeddings_128_soc-sign-bitcoinalpha.h5', 'r') as f:
@@ -83,7 +75,7 @@ if __name__ == "__main__":
 
     print(embeddings_otc.shape)
     print(embeddings_alpha.shape)
-    print(df_test_otc.shape, df_test_alpha.shape)
+    print(df_test_otc.shape, df_test_otc.shape)
     print("\n")
     print("Prediction Scores for bitcoin OTC dataset")
     predictMetrics(embeddings_otc, df_train_otc, df_test_otc)
