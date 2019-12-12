@@ -1,0 +1,478 @@
+
+
+Prediction Scores for bitcoin OTC dataset
+[0 1]
+Model: "sequential_1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_1 (Dense)              (None, 42)                5418      
+_________________________________________________________________
+dense_2 (Dense)              (None, 21)                903       
+_________________________________________________________________
+dense_3 (Dense)              (None, 1)                 22        
+=================================================================
+Total params: 6,343
+Trainable params: 6,343
+Non-trainable params: 0
+_________________________________________________________________
+None
+Epoch 1/5
+
+  256/30253 [..............................] - ETA: 1:10 - loss: 0.1946 - recall_1: 1.0000 - precision_1: 0.8945 - kullback_leibler_divergence: -1.7000e-07 - auc_1: 0.5000 - accuracy: 0.8945
+ 1536/30253 [>.............................] - ETA: 12s - loss: 0.1954 - recall_1: 1.0000 - precision_1: 0.8939 - kullback_leibler_divergence: -1.7104e-07 - auc_1: 0.5000 - accuracy: 0.8939 
+ 3072/30253 [==>...........................] - ETA: 6s - loss: 0.1897 - recall_1: 1.0000 - precision_1: 0.8984 - kullback_leibler_divergence: -1.6370e-07 - auc_1: 0.5000 - accuracy: 0.8984 
+ 4608/30253 [===>..........................] - ETA: 4s - loss: 0.1878 - recall_1: 1.0000 - precision_1: 0.9000 - kullback_leibler_divergence: -1.6125e-07 - auc_1: 0.5000 - accuracy: 0.9000
+ 5888/30253 [====>.........................] - ETA: 3s - loss: 0.1897 - recall_1: 1.0000 - precision_1: 0.8984 - kullback_leibler_divergence: -1.6370e-07 - auc_1: 0.5000 - accuracy: 0.8984
+ 7424/30253 [======>.......................] - ETA: 2s - loss: 0.1883 - recall_1: 1.0000 - precision_1: 0.8995 - kullback_leibler_divergence: -1.6196e-07 - auc_1: 0.5000 - accuracy: 0.8995
+ 8704/30253 [=======>......................] - ETA: 2s - loss: 0.1869 - recall_1: 1.0000 - precision_1: 0.9006 - kullback_leibler_divergence: -1.6018e-07 - auc_1: 0.5000 - accuracy: 0.9006
+ 9984/30253 [========>.....................] - ETA: 2s - loss: 0.1878 - recall_1: 1.0000 - precision_1: 0.8999 - kullback_leibler_divergence: -1.6128e-07 - auc_1: 0.5000 - accuracy: 0.8999
+11520/30253 [==========>...................] - ETA: 1s - loss: 0.1886 - recall_1: 1.0000 - precision_1: 0.8993 - kullback_leibler_divergence: -1.6230e-07 - auc_1: 0.5000 - accuracy: 0.8993
+13056/30253 [===========>..................] - ETA: 1s - loss: 0.1887 - recall_1: 1.0000 - precision_1: 0.8992 - kullback_leibler_divergence: -1.6246e-07 - auc_1: 0.5000 - accuracy: 0.8992
+14592/30253 [=============>................] - ETA: 1s - loss: 0.1871 - recall_1: 1.0000 - precision_1: 0.9005 - kullback_leibler_divergence: -1.6039e-07 - auc_1: 0.5000 - accuracy: 0.9005
+16128/30253 [==============>...............] - ETA: 1s - loss: 0.1863 - recall_1: 1.0000 - precision_1: 0.9011 - kullback_leibler_divergence: -1.5940e-07 - auc_1: 0.5000 - accuracy: 0.9011
+17408/30253 [================>.............] - ETA: 0s - loss: 0.1864 - recall_1: 1.0000 - precision_1: 0.9010 - kullback_leibler_divergence: -1.5953e-07 - auc_1: 0.5000 - accuracy: 0.9010
+18688/30253 [=================>............] - ETA: 0s - loss: 0.1875 - recall_1: 1.0000 - precision_1: 0.9001 - kullback_leibler_divergence: -1.6094e-07 - auc_1: 0.5000 - accuracy: 0.9001
+20224/30253 [===================>..........] - ETA: 0s - loss: 0.1876 - recall_1: 1.0000 - precision_1: 0.9001 - kullback_leibler_divergence: -1.6099e-07 - auc_1: 0.5000 - accuracy: 0.9001
+21760/30253 [====================>.........] - ETA: 0s - loss: 0.1871 - recall_1: 1.0000 - precision_1: 0.9005 - kullback_leibler_divergence: -1.6037e-07 - auc_1: 0.5000 - accuracy: 0.9005
+23040/30253 [=====================>........] - ETA: 0s - loss: 0.1873 - recall_1: 1.0000 - precision_1: 0.9003 - kullback_leibler_divergence: -1.6062e-07 - auc_1: 0.5000 - accuracy: 0.9003
+24320/30253 [=======================>......] - ETA: 0s - loss: 0.1877 - recall_1: 1.0000 - precision_1: 0.9000 - kullback_leibler_divergence: -1.6111e-07 - auc_1: 0.5000 - accuracy: 0.9000
+25600/30253 [========================>.....] - ETA: 0s - loss: 0.1874 - recall_1: 1.0000 - precision_1: 0.9002 - kullback_leibler_divergence: -1.6080e-07 - auc_1: 0.5000 - accuracy: 0.9002
+26880/30253 [=========================>....] - ETA: 0s - loss: 0.1882 - recall_1: 1.0000 - precision_1: 0.8996 - kullback_leibler_divergence: -1.6184e-07 - auc_1: 0.5000 - accuracy: 0.8996
+28416/30253 [===========================>..] - ETA: 0s - loss: 0.1882 - recall_1: 1.0000 - precision_1: 0.8996 - kullback_leibler_divergence: -1.6177e-07 - auc_1: 0.5000 - accuracy: 0.8996
+29696/30253 [============================>.] - ETA: 0s - loss: 0.1883 - recall_1: 1.0000 - precision_1: 0.8995 - kullback_leibler_divergence: -1.6196e-07 - auc_1: 0.5000 - accuracy: 0.8995
+30253/30253 [==============================] - 2s 59us/step - loss: 0.1879 - recall_1: 1.0000 - precision_1: 0.8999 - kullback_leibler_divergence: -1.6138e-07 - auc_1: 0.5000 - accuracy: 0.8999
+Epoch 2/5
+
+  256/30253 [..............................] - ETA: 1s - loss: 0.1750 - recall_1: 1.0000 - precision_1: 0.9102 - kullback_leibler_divergence: -1.4481e-07 - auc_1: 0.5000 - accuracy: 0.9102
+ 1536/30253 [>.............................] - ETA: 1s - loss: 0.1897 - recall_1: 1.0000 - precision_1: 0.8984 - kullback_leibler_divergence: -1.6370e-07 - auc_1: 0.5000 - accuracy: 0.8984
+ 2816/30253 [=>............................] - ETA: 1s - loss: 0.1892 - recall_1: 1.0000 - precision_1: 0.8988 - kullback_leibler_divergence: -1.6313e-07 - auc_1: 0.5000 - accuracy: 0.8988
+ 4608/30253 [===>..........................] - ETA: 0s - loss: 0.1870 - recall_1: 1.0000 - precision_1: 0.9006 - kullback_leibler_divergence: -1.6020e-07 - auc_1: 0.5000 - accuracy: 0.9006
+ 6400/30253 [=====>........................] - ETA: 0s - loss: 0.1887 - recall_1: 1.0000 - precision_1: 0.8992 - kullback_leibler_divergence: -1.6244e-07 - auc_1: 0.5000 - accuracy: 0.8992
+ 7680/30253 [======>.......................] - ETA: 0s - loss: 0.1866 - recall_1: 1.0000 - precision_1: 0.9009 - kullback_leibler_divergence: -1.5971e-07 - auc_1: 0.5000 - accuracy: 0.9009
+ 8960/30253 [=======>......................] - ETA: 0s - loss: 0.1883 - recall_1: 1.0000 - precision_1: 0.8996 - kullback_leibler_divergence: -1.6190e-07 - auc_1: 0.5000 - accuracy: 0.8996
+10240/30253 [=========>....................] - ETA: 0s - loss: 0.1869 - recall_1: 1.0000 - precision_1: 0.9007 - kullback_leibler_divergence: -1.6008e-07 - auc_1: 0.5000 - accuracy: 0.9007
+11520/30253 [==========>...................] - ETA: 0s - loss: 0.1868 - recall_1: 1.0000 - precision_1: 0.9007 - kullback_leibler_divergence: -1.6006e-07 - auc_1: 0.5000 - accuracy: 0.9007
+13056/30253 [===========>..................] - ETA: 0s - loss: 0.1881 - recall_1: 1.0000 - precision_1: 0.8997 - kullback_leibler_divergence: -1.6172e-07 - auc_1: 0.5000 - accuracy: 0.8997
+14336/30253 [=============>................] - ETA: 0s - loss: 0.1870 - recall_1: 1.0000 - precision_1: 0.9006 - kullback_leibler_divergence: -1.6021e-07 - auc_1: 0.5000 - accuracy: 0.9006
+16128/30253 [==============>...............] - ETA: 0s - loss: 0.1870 - recall_1: 1.0000 - precision_1: 0.9006 - kullback_leibler_divergence: -1.6020e-07 - auc_1: 0.5000 - accuracy: 0.9006
+17664/30253 [================>.............] - ETA: 0s - loss: 0.1881 - recall_1: 1.0000 - precision_1: 0.8997 - kullback_leibler_divergence: -1.6169e-07 - auc_1: 0.5000 - accuracy: 0.8997
+18944/30253 [=================>............] - ETA: 0s - loss: 0.1881 - recall_1: 1.0000 - precision_1: 0.8997 - kullback_leibler_divergence: -1.6174e-07 - auc_1: 0.5000 - accuracy: 0.8997
+20224/30253 [===================>..........] - ETA: 0s - loss: 0.1877 - recall_1: 1.0000 - precision_1: 0.9000 - kullback_leibler_divergence: -1.6115e-07 - auc_1: 0.5000 - accuracy: 0.9000
+21760/30253 [====================>.........] - ETA: 0s - loss: 0.1874 - recall_1: 1.0000 - precision_1: 0.9003 - kullback_leibler_divergence: -1.6074e-07 - auc_1: 0.5000 - accuracy: 0.9003
+23296/30253 [======================>.......] - ETA: 0s - loss: 0.1887 - recall_1: 1.0000 - precision_1: 0.8992 - kullback_leibler_divergence: -1.6245e-07 - auc_1: 0.5000 - accuracy: 0.8992
+24576/30253 [=======================>......] - ETA: 0s - loss: 0.1883 - recall_1: 1.0000 - precision_1: 0.8995 - kullback_leibler_divergence: -1.6199e-07 - auc_1: 0.5000 - accuracy: 0.8995
+25856/30253 [========================>.....] - ETA: 0s - loss: 0.1883 - recall_1: 1.0000 - precision_1: 0.8995 - kullback_leibler_divergence: -1.6195e-07 - auc_1: 0.5000 - accuracy: 0.8995
+27136/30253 [=========================>....] - ETA: 0s - loss: 0.1882 - recall_1: 1.0000 - precision_1: 0.8996 - kullback_leibler_divergence: -1.6186e-07 - auc_1: 0.5000 - accuracy: 0.8996
+28416/30253 [===========================>..] - ETA: 0s - loss: 0.1885 - recall_1: 1.0000 - precision_1: 0.8994 - kullback_leibler_divergence: -1.6217e-07 - auc_1: 0.5000 - accuracy: 0.8994
+29696/30253 [============================>.] - ETA: 0s - loss: 0.1878 - recall_1: 1.0000 - precision_1: 0.9000 - kullback_leibler_divergence: -1.6126e-07 - auc_1: 0.5000 - accuracy: 0.9000
+30253/30253 [==============================] - 1s 39us/step - loss: 0.1879 - recall_1: 1.0000 - precision_1: 0.8999 - kullback_leibler_divergence: -1.6138e-07 - auc_1: 0.5000 - accuracy: 0.8999
+Epoch 3/5
+
+  256/30253 [..............................] - ETA: 1s - loss: 0.1799 - recall_1: 1.0000 - precision_1: 0.9062 - kullback_leibler_divergence: -1.5111e-07 - auc_1: 0.5000 - accuracy: 0.9062
+ 1536/30253 [>.............................] - ETA: 1s - loss: 0.1856 - recall_1: 1.0000 - precision_1: 0.9017 - kullback_leibler_divergence: -1.5845e-07 - auc_1: 0.5000 - accuracy: 0.9017
+ 2816/30253 [=>............................] - ETA: 1s - loss: 0.1777 - recall_1: 1.0000 - precision_1: 0.9080 - kullback_leibler_divergence: -1.4825e-07 - auc_1: 0.5000 - accuracy: 0.9080
+ 4096/30253 [===>..........................] - ETA: 1s - loss: 0.1778 - recall_1: 1.0000 - precision_1: 0.9080 - kullback_leibler_divergence: -1.4835e-07 - auc_1: 0.5000 - accuracy: 0.9080
+ 5376/30253 [====>.........................] - ETA: 1s - loss: 0.1790 - recall_1: 1.0000 - precision_1: 0.9070 - kullback_leibler_divergence: -1.4991e-07 - auc_1: 0.5000 - accuracy: 0.9070
+ 6656/30253 [=====>........................] - ETA: 0s - loss: 0.1786 - recall_1: 1.0000 - precision_1: 0.9073 - kullback_leibler_divergence: -1.4941e-07 - auc_1: 0.5000 - accuracy: 0.9073
+ 7936/30253 [======>.......................] - ETA: 0s - loss: 0.1829 - recall_1: 1.0000 - precision_1: 0.9039 - kullback_leibler_divergence: -1.5497e-07 - auc_1: 0.5000 - accuracy: 0.9039
+ 9472/30253 [========>.....................] - ETA: 0s - loss: 0.1840 - recall_1: 1.0000 - precision_1: 0.9030 - kullback_leibler_divergence: -1.5638e-07 - auc_1: 0.5000 - accuracy: 0.9030
+11008/30253 [=========>....................] - ETA: 0s - loss: 0.1846 - recall_1: 1.0000 - precision_1: 0.9025 - kullback_leibler_divergence: -1.5711e-07 - auc_1: 0.5000 - accuracy: 0.9025
+12544/30253 [===========>..................] - ETA: 0s - loss: 0.1845 - recall_1: 1.0000 - precision_1: 0.9026 - kullback_leibler_divergence: -1.5702e-07 - auc_1: 0.5000 - accuracy: 0.9026
+14080/30253 [============>.................] - ETA: 0s - loss: 0.1862 - recall_1: 1.0000 - precision_1: 0.9012 - kullback_leibler_divergence: -1.5923e-07 - auc_1: 0.5000 - accuracy: 0.9012
+15872/30253 [==============>...............] - ETA: 0s - loss: 0.1863 - recall_1: 1.0000 - precision_1: 0.9011 - kullback_leibler_divergence: -1.5933e-07 - auc_1: 0.5000 - accuracy: 0.9011
+17408/30253 [================>.............] - ETA: 0s - loss: 0.1869 - recall_1: 1.0000 - precision_1: 0.9007 - kullback_leibler_divergence: -1.6009e-07 - auc_1: 0.5000 - accuracy: 0.9007
+18688/30253 [=================>............] - ETA: 0s - loss: 0.1860 - recall_1: 1.0000 - precision_1: 0.9014 - kullback_leibler_divergence: -1.5896e-07 - auc_1: 0.5000 - accuracy: 0.9014
+19968/30253 [==================>...........] - ETA: 0s - loss: 0.1869 - recall_1: 1.0000 - precision_1: 0.9006 - kullback_leibler_divergence: -1.6015e-07 - auc_1: 0.5000 - accuracy: 0.9006
+21248/30253 [====================>.........] - ETA: 0s - loss: 0.1875 - recall_1: 1.0000 - precision_1: 0.9002 - kullback_leibler_divergence: -1.6089e-07 - auc_1: 0.5000 - accuracy: 0.9002
+22528/30253 [=====================>........] - ETA: 0s - loss: 0.1883 - recall_1: 1.0000 - precision_1: 0.8995 - kullback_leibler_divergence: -1.6198e-07 - auc_1: 0.5000 - accuracy: 0.8995
+23808/30253 [======================>.......] - ETA: 0s - loss: 0.1892 - recall_1: 1.0000 - precision_1: 0.8988 - kullback_leibler_divergence: -1.6309e-07 - auc_1: 0.5000 - accuracy: 0.8988
+25344/30253 [========================>.....] - ETA: 0s - loss: 0.1890 - recall_1: 1.0000 - precision_1: 0.8990 - kullback_leibler_divergence: -1.6281e-07 - auc_1: 0.5000 - accuracy: 0.8990
+26624/30253 [=========================>....] - ETA: 0s - loss: 0.1889 - recall_1: 1.0000 - precision_1: 0.8990 - kullback_leibler_divergence: -1.6273e-07 - auc_1: 0.5000 - accuracy: 0.8990
+27904/30253 [==========================>...] - ETA: 0s - loss: 0.1882 - recall_1: 1.0000 - precision_1: 0.8996 - kullback_leibler_divergence: -1.6179e-07 - auc_1: 0.5000 - accuracy: 0.8996
+29440/30253 [============================>.] - ETA: 0s - loss: 0.1882 - recall_1: 1.0000 - precision_1: 0.8996 - kullback_leibler_divergence: -1.6178e-07 - auc_1: 0.5000 - accuracy: 0.8996
+30253/30253 [==============================] - 1s 40us/step - loss: 0.1879 - recall_1: 1.0000 - precision_1: 0.8999 - kullback_leibler_divergence: -1.6138e-07 - auc_1: 0.5000 - accuracy: 0.8999
+Epoch 4/5
+
+  256/30253 [..............................] - ETA: 1s - loss: 0.1701 - recall_1: 1.0000 - precision_1: 0.9141 - kullback_leibler_divergence: -1.3851e-07 - auc_1: 0.5000 - accuracy: 0.9141
+ 2048/30253 [=>............................] - ETA: 0s - loss: 0.1836 - recall_1: 1.0000 - precision_1: 0.9033 - kullback_leibler_divergence: -1.5583e-07 - auc_1: 0.5000 - accuracy: 0.9033
+ 3584/30253 [==>...........................] - ETA: 0s - loss: 0.1851 - recall_1: 1.0000 - precision_1: 0.9021 - kullback_leibler_divergence: -1.5785e-07 - auc_1: 0.5000 - accuracy: 0.9021
+ 4864/30253 [===>..........................] - ETA: 0s - loss: 0.1868 - recall_1: 1.0000 - precision_1: 0.9007 - kullback_leibler_divergence: -1.6005e-07 - auc_1: 0.5000 - accuracy: 0.9007
+ 6400/30253 [=====>........................] - ETA: 0s - loss: 0.1885 - recall_1: 1.0000 - precision_1: 0.8994 - kullback_leibler_divergence: -1.6219e-07 - auc_1: 0.5000 - accuracy: 0.8994
+ 7680/30253 [======>.......................] - ETA: 0s - loss: 0.1866 - recall_1: 1.0000 - precision_1: 0.9009 - kullback_leibler_divergence: -1.5971e-07 - auc_1: 0.5000 - accuracy: 0.9009
+ 8960/30253 [=======>......................] - ETA: 0s - loss: 0.1862 - recall_1: 1.0000 - precision_1: 0.9012 - kullback_leibler_divergence: -1.5920e-07 - auc_1: 0.5000 - accuracy: 0.9012
+10496/30253 [=========>....................] - ETA: 0s - loss: 0.1901 - recall_1: 1.0000 - precision_1: 0.8981 - kullback_leibler_divergence: -1.6431e-07 - auc_1: 0.5000 - accuracy: 0.8981
+12032/30253 [==========>...................] - ETA: 0s - loss: 0.1856 - recall_1: 1.0000 - precision_1: 0.9017 - kullback_leibler_divergence: -1.5847e-07 - auc_1: 0.5000 - accuracy: 0.9017
+13568/30253 [============>.................] - ETA: 0s - loss: 0.1864 - recall_1: 1.0000 - precision_1: 0.9010 - kullback_leibler_divergence: -1.5954e-07 - auc_1: 0.5000 - accuracy: 0.9010
+14848/30253 [=============>................] - ETA: 0s - loss: 0.1868 - recall_1: 1.0000 - precision_1: 0.9007 - kullback_leibler_divergence: -1.6001e-07 - auc_1: 0.5000 - accuracy: 0.9007
+16384/30253 [===============>..............] - ETA: 0s - loss: 0.1864 - recall_1: 1.0000 - precision_1: 0.9011 - kullback_leibler_divergence: -1.5947e-07 - auc_1: 0.5000 - accuracy: 0.9011
+17664/30253 [================>.............] - ETA: 0s - loss: 0.1868 - recall_1: 1.0000 - precision_1: 0.9008 - kullback_leibler_divergence: -1.5996e-07 - auc_1: 0.5000 - accuracy: 0.9008
+19200/30253 [==================>...........] - ETA: 0s - loss: 0.1875 - recall_1: 1.0000 - precision_1: 0.9002 - kullback_leibler_divergence: -1.6093e-07 - auc_1: 0.5000 - accuracy: 0.9002
+20480/30253 [===================>..........] - ETA: 0s - loss: 0.1874 - recall_1: 1.0000 - precision_1: 0.9002 - kullback_leibler_divergence: -1.6079e-07 - auc_1: 0.5000 - accuracy: 0.9002
+21760/30253 [====================>.........] - ETA: 0s - loss: 0.1868 - recall_1: 1.0000 - precision_1: 0.9007 - kullback_leibler_divergence: -1.6000e-07 - auc_1: 0.5000 - accuracy: 0.9007
+23040/30253 [=====================>........] - ETA: 0s - loss: 0.1876 - recall_1: 1.0000 - precision_1: 0.9001 - kullback_leibler_divergence: -1.6097e-07 - auc_1: 0.5000 - accuracy: 0.9001
+24576/30253 [=======================>......] - ETA: 0s - loss: 0.1874 - recall_1: 1.0000 - precision_1: 0.9003 - kullback_leibler_divergence: -1.6075e-07 - auc_1: 0.5000 - accuracy: 0.9003
+25856/30253 [========================>.....] - ETA: 0s - loss: 0.1878 - recall_1: 1.0000 - precision_1: 0.8999 - kullback_leibler_divergence: -1.6127e-07 - auc_1: 0.5000 - accuracy: 0.8999
+27392/30253 [==========================>...] - ETA: 0s - loss: 0.1883 - recall_1: 1.0000 - precision_1: 0.8996 - kullback_leibler_divergence: -1.6188e-07 - auc_1: 0.5000 - accuracy: 0.8996
+28928/30253 [===========================>..] - ETA: 0s - loss: 0.1879 - recall_1: 1.0000 - precision_1: 0.8998 - kullback_leibler_divergence: -1.6147e-07 - auc_1: 0.5000 - accuracy: 0.8998
+30253/30253 [==============================] - 1s 38us/step - loss: 0.1879 - recall_1: 1.0000 - precision_1: 0.8999 - kullback_leibler_divergence: -1.6138e-07 - auc_1: 0.5000 - accuracy: 0.8999
+Epoch 5/5
+
+  256/30253 [..............................] - ETA: 0s - loss: 0.1848 - recall_1: 1.0000 - precision_1: 0.9023 - kullback_leibler_divergence: -1.5740e-07 - auc_1: 0.5000 - accuracy: 0.9023
+ 2560/30253 [=>............................] - ETA: 0s - loss: 0.1779 - recall_1: 1.0000 - precision_1: 0.9078 - kullback_leibler_divergence: -1.4859e-07 - auc_1: 0.5000 - accuracy: 0.9078
+ 4096/30253 [===>..........................] - ETA: 0s - loss: 0.1802 - recall_1: 1.0000 - precision_1: 0.9060 - kullback_leibler_divergence: -1.5150e-07 - auc_1: 0.5000 - accuracy: 0.9060
+ 5632/30253 [====>.........................] - ETA: 0s - loss: 0.1830 - recall_1: 1.0000 - precision_1: 0.9038 - kullback_leibler_divergence: -1.5511e-07 - auc_1: 0.5000 - accuracy: 0.9038
+ 7168/30253 [======>.......................] - ETA: 0s - loss: 0.1823 - recall_1: 1.0000 - precision_1: 0.9043 - kullback_leibler_divergence: -1.5426e-07 - auc_1: 0.5000 - accuracy: 0.9043
+ 8704/30253 [=======>......................] - ETA: 0s - loss: 0.1846 - recall_1: 1.0000 - precision_1: 0.9025 - kullback_leibler_divergence: -1.5722e-07 - auc_1: 0.5000 - accuracy: 0.9025
+ 9984/30253 [========>.....................] - ETA: 0s - loss: 0.1839 - recall_1: 1.0000 - precision_1: 0.9030 - kullback_leibler_divergence: -1.5627e-07 - auc_1: 0.5000 - accuracy: 0.9030
+11520/30253 [==========>...................] - ETA: 0s - loss: 0.1873 - recall_1: 1.0000 - precision_1: 0.9003 - kullback_leibler_divergence: -1.6062e-07 - auc_1: 0.5000 - accuracy: 0.9003
+12800/30253 [===========>..................] - ETA: 0s - loss: 0.1868 - recall_1: 1.0000 - precision_1: 0.9007 - kullback_leibler_divergence: -1.6005e-07 - auc_1: 0.5000 - accuracy: 0.9007
+14336/30253 [=============>................] - ETA: 0s - loss: 0.1886 - recall_1: 1.0000 - precision_1: 0.8993 - kullback_leibler_divergence: -1.6235e-07 - auc_1: 0.5000 - accuracy: 0.8993
+15616/30253 [==============>...............] - ETA: 0s - loss: 0.1885 - recall_1: 1.0000 - precision_1: 0.8994 - kullback_leibler_divergence: -1.6215e-07 - auc_1: 0.5000 - accuracy: 0.8994
+16896/30253 [===============>..............] - ETA: 0s - loss: 0.1875 - recall_1: 1.0000 - precision_1: 0.9002 - kullback_leibler_divergence: -1.6093e-07 - auc_1: 0.5000 - accuracy: 0.9002
+18432/30253 [=================>............] - ETA: 0s - loss: 0.1864 - recall_1: 1.0000 - precision_1: 0.9010 - kullback_leibler_divergence: -1.5950e-07 - auc_1: 0.5000 - accuracy: 0.9010
+19968/30253 [==================>...........] - ETA: 0s - loss: 0.1871 - recall_1: 1.0000 - precision_1: 0.9005 - kullback_leibler_divergence: -1.6039e-07 - auc_1: 0.5000 - accuracy: 0.9005
+21248/30253 [====================>.........] - ETA: 0s - loss: 0.1872 - recall_1: 1.0000 - precision_1: 0.9004 - kullback_leibler_divergence: -1.6051e-07 - auc_1: 0.5000 - accuracy: 0.9004
+22528/30253 [=====================>........] - ETA: 0s - loss: 0.1873 - recall_1: 1.0000 - precision_1: 0.9003 - kullback_leibler_divergence: -1.6069e-07 - auc_1: 0.5000 - accuracy: 0.9003
+23808/30253 [======================>.......] - ETA: 0s - loss: 0.1873 - recall_1: 1.0000 - precision_1: 0.9003 - kullback_leibler_divergence: -1.6065e-07 - auc_1: 0.5000 - accuracy: 0.9003
+25088/30253 [=======================>......] - ETA: 0s - loss: 0.1871 - recall_1: 1.0000 - precision_1: 0.9005 - kullback_leibler_divergence: -1.6036e-07 - auc_1: 0.5000 - accuracy: 0.9005
+26368/30253 [=========================>....] - ETA: 0s - loss: 0.1873 - recall_1: 1.0000 - precision_1: 0.9003 - kullback_leibler_divergence: -1.6070e-07 - auc_1: 0.5000 - accuracy: 0.9003
+27648/30253 [==========================>...] - ETA: 0s - loss: 0.1880 - recall_1: 1.0000 - precision_1: 0.8998 - kullback_leibler_divergence: -1.6154e-07 - auc_1: 0.5000 - accuracy: 0.8998
+29184/30253 [===========================>..] - ETA: 0s - loss: 0.1880 - recall_1: 1.0000 - precision_1: 0.8998 - kullback_leibler_divergence: -1.6155e-07 - auc_1: 0.5000 - accuracy: 0.8998
+30253/30253 [==============================] - 1s 39us/step - loss: 0.1879 - recall_1: 1.0000 - precision_1: 0.8999 - kullback_leibler_divergence: -1.6138e-07 - auc_1: 0.5000 - accuracy: 0.8999
+
+   32/30253 [..............................] - ETA: 1:45
+  320/30253 [..............................] - ETA: 15s 
+  608/30253 [..............................] - ETA: 10s
+  928/30253 [..............................] - ETA: 8s 
+ 1216/30253 [>.............................] - ETA: 7s
+ 1472/30253 [>.............................] - ETA: 7s
+ 1760/30253 [>.............................] - ETA: 6s
+ 2080/30253 [=>............................] - ETA: 6s
+ 2464/30253 [=>............................] - ETA: 6s
+ 2912/30253 [=>............................] - ETA: 5s
+ 3360/30253 [==>...........................] - ETA: 5s
+ 3744/30253 [==>...........................] - ETA: 4s
+ 4096/30253 [===>..........................] - ETA: 4s
+ 4352/30253 [===>..........................] - ETA: 4s
+ 4768/30253 [===>..........................] - ETA: 4s
+ 5472/30253 [====>.........................] - ETA: 4s
+ 6112/30253 [=====>........................] - ETA: 3s
+ 6464/30253 [=====>........................] - ETA: 3s
+ 6784/30253 [=====>........................] - ETA: 3s
+ 7072/30253 [======>.......................] - ETA: 3s
+ 7328/30253 [======>.......................] - ETA: 3s
+ 7616/30253 [======>.......................] - ETA: 3s
+ 7904/30253 [======>.......................] - ETA: 3s
+ 8224/30253 [=======>......................] - ETA: 3s
+ 8544/30253 [=======>......................] - ETA: 3s
+ 8864/30253 [=======>......................] - ETA: 3s
+ 9216/30253 [========>.....................] - ETA: 3s
+ 9536/30253 [========>.....................] - ETA: 3s
+ 9824/30253 [========>.....................] - ETA: 3s
+10176/30253 [=========>....................] - ETA: 3s
+10496/30253 [=========>....................] - ETA: 3s
+10816/30253 [=========>....................] - ETA: 3s
+11104/30253 [==========>...................] - ETA: 3s
+11456/30253 [==========>...................] - ETA: 3s
+11808/30253 [==========>...................] - ETA: 2s
+12160/30253 [===========>..................] - ETA: 2s
+12512/30253 [===========>..................] - ETA: 2s
+12832/30253 [===========>..................] - ETA: 2s
+13120/30253 [============>.................] - ETA: 2s
+13408/30253 [============>.................] - ETA: 2s
+13696/30253 [============>.................] - ETA: 2s
+14016/30253 [============>.................] - ETA: 2s
+14304/30253 [=============>................] - ETA: 2s
+14624/30253 [=============>................] - ETA: 2s
+14912/30253 [=============>................] - ETA: 2s
+15232/30253 [==============>...............] - ETA: 2s
+15520/30253 [==============>...............] - ETA: 2s
+15840/30253 [==============>...............] - ETA: 2s
+16160/30253 [===============>..............] - ETA: 2s
+16512/30253 [===============>..............] - ETA: 2s
+16928/30253 [===============>..............] - ETA: 2s
+17312/30253 [================>.............] - ETA: 2s
+17696/30253 [================>.............] - ETA: 2s
+18016/30253 [================>.............] - ETA: 1s
+18336/30253 [=================>............] - ETA: 1s
+18656/30253 [=================>............] - ETA: 1s
+18976/30253 [=================>............] - ETA: 1s
+19264/30253 [==================>...........] - ETA: 1s
+19552/30253 [==================>...........] - ETA: 1s
+19904/30253 [==================>...........] - ETA: 1s
+20224/30253 [===================>..........] - ETA: 1s
+20544/30253 [===================>..........] - ETA: 1s
+20832/30253 [===================>..........] - ETA: 1s
+21120/30253 [===================>..........] - ETA: 1s
+21440/30253 [====================>.........] - ETA: 1s
+21856/30253 [====================>.........] - ETA: 1s
+22208/30253 [=====================>........] - ETA: 1s
+22528/30253 [=====================>........] - ETA: 1s
+22848/30253 [=====================>........] - ETA: 1s
+23200/30253 [======================>.......] - ETA: 1s
+23552/30253 [======================>.......] - ETA: 1s
+23840/30253 [======================>.......] - ETA: 1s
+24128/30253 [======================>.......] - ETA: 1s
+24416/30253 [=======================>......] - ETA: 0s
+24736/30253 [=======================>......] - ETA: 0s
+25056/30253 [=======================>......] - ETA: 0s
+25344/30253 [========================>.....] - ETA: 0s
+25664/30253 [========================>.....] - ETA: 0s
+25952/30253 [========================>.....] - ETA: 0s
+26240/30253 [=========================>....] - ETA: 0s
+26528/30253 [=========================>....] - ETA: 0s
+26848/30253 [=========================>....] - ETA: 0s
+27232/30253 [==========================>...] - ETA: 0s
+27648/30253 [==========================>...] - ETA: 0s
+27936/30253 [==========================>...] - ETA: 0s
+28224/30253 [==========================>...] - ETA: 0s
+28480/30253 [===========================>..] - ETA: 0s
+28736/30253 [===========================>..] - ETA: 0s
+29024/30253 [===========================>..] - ETA: 0s
+29376/30253 [============================>.] - ETA: 0s
+29856/30253 [============================>.] - ETA: 0s
+30253/30253 [==============================] - 5s 163us/step
+
+  32/5339 [..............................] - ETA: 0s
+ 512/5339 [=>............................] - ETA: 0s
+ 960/5339 [====>.........................] - ETA: 0s
+1376/5339 [======>.......................] - ETA: 0s
+1728/5339 [========>.....................] - ETA: 0s
+2016/5339 [==========>...................] - ETA: 0s
+2336/5339 [============>.................] - ETA: 0s
+2688/5339 [==============>...............] - ETA: 0s
+3008/5339 [===============>..............] - ETA: 0s
+3328/5339 [=================>............] - ETA: 0s
+3616/5339 [===================>..........] - ETA: 0s
+3936/5339 [=====================>........] - ETA: 0s
+4224/5339 [======================>.......] - ETA: 0s
+4512/5339 [========================>.....] - ETA: 0s
+4832/5339 [==========================>...] - ETA: 0s
+5120/5339 [===========================>..] - ETA: 0s
+5339/5339 [==============================] - 1s 159us/step
+Evaluation Scores for Training Data 
+[0.18786623977491396, 1.0, 0.8998777270317078, -1.6137789771164535e-07, 0.5, 0.8998777270317078]
+Evaluation Scores for Testing Data 
+[0.18773671209611212, 1.0, 0.8999812602996826, -1.612110764881436e-07, 0.5, 0.8999812602996826]
+
+
+Prediction Scores for bitcoin alpha dataset
+86.088234 (20558, 4) (3628, 4)
+[0 1]
+Model: "sequential_2"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_4 (Dense)              (None, 42)                5418      
+_________________________________________________________________
+dense_5 (Dense)              (None, 21)                903       
+_________________________________________________________________
+dense_6 (Dense)              (None, 1)                 22        
+=================================================================
+Total params: 6,343
+Trainable params: 6,343
+Non-trainable params: 0
+_________________________________________________________________
+None
+Epoch 1/5
+
+
+Prediction Scores for bitcoin alpha dataset
+86.088234 (20558, 4) (3628, 4)
+[0 1]
+Model: "sequential_1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_1 (Dense)              (None, 42)                5418      
+_________________________________________________________________
+dense_2 (Dense)              (None, 21)                903       
+_________________________________________________________________
+dense_3 (Dense)              (None, 1)                 22        
+=================================================================
+Total params: 6,343
+Trainable params: 6,343
+Non-trainable params: 0
+_________________________________________________________________
+None
+Epoch 1/5
+
+  256/20558 [..............................] - ETA: 49s - loss: 0.1310 - recall_1: 1.0000 - precision_1: 0.9453 - kullback_leibler_divergence: -8.8146e-08 - auc_1: 0.5000 - accuracy: 0.9453
+ 1792/20558 [=>............................] - ETA: 7s - loss: 0.1576 - recall_1: 1.0000 - precision_1: 0.9241 - kullback_leibler_divergence: -1.2232e-07 - auc_1: 0.5000 - accuracy: 0.9241 
+ 3072/20558 [===>..........................] - ETA: 4s - loss: 0.1473 - recall_1: 1.0000 - precision_1: 0.9323 - kullback_leibler_divergence: -1.0913e-07 - auc_1: 0.5000 - accuracy: 0.9323
+ 4608/20558 [=====>........................] - ETA: 2s - loss: 0.1479 - recall_1: 1.0000 - precision_1: 0.9319 - kullback_leibler_divergence: -1.0983e-07 - auc_1: 0.5000 - accuracy: 0.9319
+ 6400/20558 [========>.....................] - ETA: 1s - loss: 0.1404 - recall_1: 1.0000 - precision_1: 0.9378 - kullback_leibler_divergence: -1.0023e-07 - auc_1: 0.5000 - accuracy: 0.9378
+ 7936/20558 [==========>...................] - ETA: 1s - loss: 0.1414 - recall_1: 1.0000 - precision_1: 0.9370 - kullback_leibler_divergence: -1.0155e-07 - auc_1: 0.5000 - accuracy: 0.9370
+ 9472/20558 [============>.................] - ETA: 1s - loss: 0.1433 - recall_1: 1.0000 - precision_1: 0.9355 - kullback_leibler_divergence: -1.0397e-07 - auc_1: 0.5000 - accuracy: 0.9355
+10752/20558 [==============>...............] - ETA: 0s - loss: 0.1427 - recall_1: 1.0000 - precision_1: 0.9360 - kullback_leibler_divergence: -1.0314e-07 - auc_1: 0.5000 - accuracy: 0.9360
+12288/20558 [================>.............] - ETA: 0s - loss: 0.1433 - recall_1: 1.0000 - precision_1: 0.9355 - kullback_leibler_divergence: -1.0389e-07 - auc_1: 0.5000 - accuracy: 0.9355
+13568/20558 [==================>...........] - ETA: 0s - loss: 0.1428 - recall_1: 1.0000 - precision_1: 0.9360 - kullback_leibler_divergence: -1.0323e-07 - auc_1: 0.5000 - accuracy: 0.9360
+14848/20558 [====================>.........] - ETA: 0s - loss: 0.1437 - recall_1: 1.0000 - precision_1: 0.9352 - kullback_leibler_divergence: -1.0443e-07 - auc_1: 0.5000 - accuracy: 0.9352
+16128/20558 [======================>.......] - ETA: 0s - loss: 0.1424 - recall_1: 1.0000 - precision_1: 0.9363 - kullback_leibler_divergence: -1.0274e-07 - auc_1: 0.5000 - accuracy: 0.9363
+17408/20558 [========================>.....] - ETA: 0s - loss: 0.1417 - recall_1: 1.0000 - precision_1: 0.9368 - kullback_leibler_divergence: -1.0185e-07 - auc_1: 0.5000 - accuracy: 0.9368
+18944/20558 [==========================>...] - ETA: 0s - loss: 0.1423 - recall_1: 1.0000 - precision_1: 0.9363 - kullback_leibler_divergence: -1.0261e-07 - auc_1: 0.5000 - accuracy: 0.9363
+20480/20558 [============================>.] - ETA: 0s - loss: 0.1419 - recall_1: 1.0000 - precision_1: 0.9366 - kullback_leibler_divergence: -1.0215e-07 - auc_1: 0.5000 - accuracy: 0.9366
+20558/20558 [==============================] - 1s 68us/step - loss: 0.1421 - recall_1: 1.0000 - precision_1: 0.9365 - kullback_leibler_divergence: -1.0239e-07 - auc_1: 0.5000 - accuracy: 0.9365
+Epoch 2/5
+
+  256/20558 [..............................] - ETA: 0s - loss: 0.1457 - recall_1: 1.0000 - precision_1: 0.9336 - kullback_leibler_divergence: -1.0703e-07 - auc_1: 0.5000 - accuracy: 0.9336
+ 1792/20558 [=>............................] - ETA: 0s - loss: 0.1366 - recall_1: 1.0000 - precision_1: 0.9408 - kullback_leibler_divergence: -9.5341e-08 - auc_1: 0.5000 - accuracy: 0.9408
+ 3072/20558 [===>..........................] - ETA: 0s - loss: 0.1343 - recall_1: 1.0000 - precision_1: 0.9427 - kullback_leibler_divergence: -9.2343e-08 - auc_1: 0.5000 - accuracy: 0.9427
+ 4608/20558 [=====>........................] - ETA: 0s - loss: 0.1348 - recall_1: 1.0000 - precision_1: 0.9423 - kullback_leibler_divergence: -9.3043e-08 - auc_1: 0.5000 - accuracy: 0.9423
+ 5888/20558 [=======>......................] - ETA: 0s - loss: 0.1374 - recall_1: 1.0000 - precision_1: 0.9402 - kullback_leibler_divergence: -9.6358e-08 - auc_1: 0.5000 - accuracy: 0.9402
+ 7168/20558 [=========>....................] - ETA: 0s - loss: 0.1415 - recall_1: 1.0000 - precision_1: 0.9369 - kullback_leibler_divergence: -1.0164e-07 - auc_1: 0.5000 - accuracy: 0.9369
+ 8448/20558 [===========>..................] - ETA: 0s - loss: 0.1430 - recall_1: 1.0000 - precision_1: 0.9357 - kullback_leibler_divergence: -1.0360e-07 - auc_1: 0.5000 - accuracy: 0.9357
+ 9984/20558 [=============>................] - ETA: 0s - loss: 0.1428 - recall_1: 1.0000 - precision_1: 0.9359 - kullback_leibler_divergence: -1.0332e-07 - auc_1: 0.5000 - accuracy: 0.9359
+11264/20558 [===============>..............] - ETA: 0s - loss: 0.1426 - recall_1: 1.0000 - precision_1: 0.9361 - kullback_leibler_divergence: -1.0303e-07 - auc_1: 0.5000 - accuracy: 0.9361
+12544/20558 [=================>............] - ETA: 0s - loss: 0.1425 - recall_1: 1.0000 - precision_1: 0.9361 - kullback_leibler_divergence: -1.0292e-07 - auc_1: 0.5000 - accuracy: 0.9361
+13824/20558 [===================>..........] - ETA: 0s - loss: 0.1423 - recall_1: 1.0000 - precision_1: 0.9363 - kullback_leibler_divergence: -1.0260e-07 - auc_1: 0.5000 - accuracy: 0.9363
+15360/20558 [=====================>........] - ETA: 0s - loss: 0.1420 - recall_1: 1.0000 - precision_1: 0.9366 - kullback_leibler_divergence: -1.0221e-07 - auc_1: 0.5000 - accuracy: 0.9366
+16640/20558 [=======================>......] - ETA: 0s - loss: 0.1418 - recall_1: 1.0000 - precision_1: 0.9367 - kullback_leibler_divergence: -1.0200e-07 - auc_1: 0.5000 - accuracy: 0.9367
+17920/20558 [=========================>....] - ETA: 0s - loss: 0.1416 - recall_1: 1.0000 - precision_1: 0.9369 - kullback_leibler_divergence: -1.0173e-07 - auc_1: 0.5000 - accuracy: 0.9369
+19200/20558 [===========================>..] - ETA: 0s - loss: 0.1416 - recall_1: 1.0000 - precision_1: 0.9369 - kullback_leibler_divergence: -1.0175e-07 - auc_1: 0.5000 - accuracy: 0.9369
+20558/20558 [==============================] - 1s 41us/step - loss: 0.1421 - recall_1: 1.0000 - precision_1: 0.9365 - kullback_leibler_divergence: -1.0239e-07 - auc_1: 0.5000 - accuracy: 0.9365
+Epoch 3/5
+
+  256/20558 [..............................] - ETA: 1s - loss: 0.1310 - recall_1: 1.0000 - precision_1: 0.9453 - kullback_leibler_divergence: -8.8146e-08 - auc_1: 0.5000 - accuracy: 0.9453
+ 1536/20558 [=>............................] - ETA: 0s - loss: 0.1473 - recall_1: 1.0000 - precision_1: 0.9323 - kullback_leibler_divergence: -1.0913e-07 - auc_1: 0.5000 - accuracy: 0.9323
+ 2816/20558 [===>..........................] - ETA: 0s - loss: 0.1430 - recall_1: 1.0000 - precision_1: 0.9357 - kullback_leibler_divergence: -1.0360e-07 - auc_1: 0.5000 - accuracy: 0.9357
+ 4352/20558 [=====>........................] - ETA: 0s - loss: 0.1397 - recall_1: 1.0000 - precision_1: 0.9384 - kullback_leibler_divergence: -9.9257e-08 - auc_1: 0.5000 - accuracy: 0.9384
+ 5632/20558 [=======>......................] - ETA: 0s - loss: 0.1421 - recall_1: 1.0000 - precision_1: 0.9364 - kullback_leibler_divergence: -1.0246e-07 - auc_1: 0.5000 - accuracy: 0.9364
+ 7168/20558 [=========>....................] - ETA: 0s - loss: 0.1417 - recall_1: 1.0000 - precision_1: 0.9368 - kullback_leibler_divergence: -1.0186e-07 - auc_1: 0.5000 - accuracy: 0.9368
+ 8704/20558 [===========>..................] - ETA: 0s - loss: 0.1415 - recall_1: 1.0000 - precision_1: 0.9369 - kullback_leibler_divergence: -1.0166e-07 - auc_1: 0.5000 - accuracy: 0.9369
+10240/20558 [=============>................] - ETA: 0s - loss: 0.1413 - recall_1: 1.0000 - precision_1: 0.9371 - kullback_leibler_divergence: -1.0137e-07 - auc_1: 0.5000 - accuracy: 0.9371
+11520/20558 [===============>..............] - ETA: 0s - loss: 0.1398 - recall_1: 1.0000 - precision_1: 0.9383 - kullback_leibler_divergence: -9.9479e-08 - auc_1: 0.5000 - accuracy: 0.9383
+12800/20558 [=================>............] - ETA: 0s - loss: 0.1402 - recall_1: 1.0000 - precision_1: 0.9380 - kullback_leibler_divergence: -9.9983e-08 - auc_1: 0.5000 - accuracy: 0.9380
+14336/20558 [===================>..........] - ETA: 0s - loss: 0.1407 - recall_1: 1.0000 - precision_1: 0.9376 - kullback_leibler_divergence: -1.0063e-07 - auc_1: 0.5000 - accuracy: 0.9376
+15616/20558 [=====================>........] - ETA: 0s - loss: 0.1417 - recall_1: 1.0000 - precision_1: 0.9368 - kullback_leibler_divergence: -1.0187e-07 - auc_1: 0.5000 - accuracy: 0.9368
+17152/20558 [========================>.....] - ETA: 0s - loss: 0.1414 - recall_1: 1.0000 - precision_1: 0.9370 - kullback_leibler_divergence: -1.0149e-07 - auc_1: 0.5000 - accuracy: 0.9370
+18688/20558 [==========================>...] - ETA: 0s - loss: 0.1422 - recall_1: 1.0000 - precision_1: 0.9364 - kullback_leibler_divergence: -1.0255e-07 - auc_1: 0.5000 - accuracy: 0.9364
+19968/20558 [============================>.] - ETA: 0s - loss: 0.1423 - recall_1: 1.0000 - precision_1: 0.9363 - kullback_leibler_divergence: -1.0259e-07 - auc_1: 0.5000 - accuracy: 0.9363
+20558/20558 [==============================] - 1s 39us/step - loss: 0.1421 - recall_1: 1.0000 - precision_1: 0.9365 - kullback_leibler_divergence: -1.0239e-07 - auc_1: 0.5000 - accuracy: 0.9365
+Epoch 4/5
+
+  256/20558 [..............................] - ETA: 1s - loss: 0.1506 - recall_1: 1.0000 - precision_1: 0.9297 - kullback_leibler_divergence: -1.1333e-07 - auc_1: 0.5000 - accuracy: 0.9297
+ 1536/20558 [=>............................] - ETA: 0s - loss: 0.1481 - recall_1: 1.0000 - precision_1: 0.9316 - kullback_leibler_divergence: -1.1018e-07 - auc_1: 0.5000 - accuracy: 0.9316
+ 2816/20558 [===>..........................] - ETA: 0s - loss: 0.1497 - recall_1: 1.0000 - precision_1: 0.9304 - kullback_leibler_divergence: -1.1219e-07 - auc_1: 0.5000 - accuracy: 0.9304
+ 4096/20558 [====>.........................] - ETA: 0s - loss: 0.1491 - recall_1: 1.0000 - precision_1: 0.9309 - kullback_leibler_divergence: -1.1136e-07 - auc_1: 0.5000 - accuracy: 0.9309
+ 5376/20558 [======>.......................] - ETA: 0s - loss: 0.1513 - recall_1: 1.0000 - precision_1: 0.9291 - kullback_leibler_divergence: -1.1423e-07 - auc_1: 0.5000 - accuracy: 0.9291
+ 6656/20558 [========>.....................] - ETA: 0s - loss: 0.1500 - recall_1: 1.0000 - precision_1: 0.9301 - kullback_leibler_divergence: -1.1260e-07 - auc_1: 0.5000 - accuracy: 0.9301
+ 7936/20558 [==========>...................] - ETA: 0s - loss: 0.1485 - recall_1: 1.0000 - precision_1: 0.9313 - kullback_leibler_divergence: -1.1069e-07 - auc_1: 0.5000 - accuracy: 0.9313
+ 9216/20558 [============>.................] - ETA: 0s - loss: 0.1473 - recall_1: 1.0000 - precision_1: 0.9323 - kullback_leibler_divergence: -1.0913e-07 - auc_1: 0.5000 - accuracy: 0.9323
+10496/20558 [==============>...............] - ETA: 0s - loss: 0.1442 - recall_1: 1.0000 - precision_1: 0.9348 - kullback_leibler_divergence: -1.0504e-07 - auc_1: 0.5000 - accuracy: 0.9348
+11776/20558 [================>.............] - ETA: 0s - loss: 0.1427 - recall_1: 1.0000 - precision_1: 0.9360 - kullback_leibler_divergence: -1.0320e-07 - auc_1: 0.5000 - accuracy: 0.9360
+13056/20558 [==================>...........] - ETA: 0s - loss: 0.1437 - recall_1: 1.0000 - precision_1: 0.9352 - kullback_leibler_divergence: -1.0444e-07 - auc_1: 0.5000 - accuracy: 0.9352
+14336/20558 [===================>..........] - ETA: 0s - loss: 0.1435 - recall_1: 1.0000 - precision_1: 0.9353 - kullback_leibler_divergence: -1.0422e-07 - auc_1: 0.5000 - accuracy: 0.9353
+15616/20558 [=====================>........] - ETA: 0s - loss: 0.1429 - recall_1: 1.0000 - precision_1: 0.9358 - kullback_leibler_divergence: -1.0342e-07 - auc_1: 0.5000 - accuracy: 0.9358
+16896/20558 [=======================>......] - ETA: 0s - loss: 0.1424 - recall_1: 1.0000 - precision_1: 0.9363 - kullback_leibler_divergence: -1.0274e-07 - auc_1: 0.5000 - accuracy: 0.9363
+18176/20558 [=========================>....] - ETA: 0s - loss: 0.1430 - recall_1: 1.0000 - precision_1: 0.9357 - kullback_leibler_divergence: -1.0358e-07 - auc_1: 0.5000 - accuracy: 0.9357
+19712/20558 [===========================>..] - ETA: 0s - loss: 0.1427 - recall_1: 1.0000 - precision_1: 0.9360 - kullback_leibler_divergence: -1.0311e-07 - auc_1: 0.5000 - accuracy: 0.9360
+20558/20558 [==============================] - 1s 41us/step - loss: 0.1421 - recall_1: 1.0000 - precision_1: 0.9365 - kullback_leibler_divergence: -1.0239e-07 - auc_1: 0.5000 - accuracy: 0.9365
+Epoch 5/5
+
+  256/20558 [..............................] - ETA: 1s - loss: 0.1604 - recall_1: 1.0000 - precision_1: 0.9219 - kullback_leibler_divergence: -1.2592e-07 - auc_1: 0.5000 - accuracy: 0.9219
+ 1536/20558 [=>............................] - ETA: 0s - loss: 0.1490 - recall_1: 1.0000 - precision_1: 0.9310 - kullback_leibler_divergence: -1.1123e-07 - auc_1: 0.5000 - accuracy: 0.9310
+ 2816/20558 [===>..........................] - ETA: 0s - loss: 0.1484 - recall_1: 1.0000 - precision_1: 0.9315 - kullback_leibler_divergence: -1.1047e-07 - auc_1: 0.5000 - accuracy: 0.9315
+ 4096/20558 [====>.........................] - ETA: 0s - loss: 0.1484 - recall_1: 1.0000 - precision_1: 0.9314 - kullback_leibler_divergence: -1.1058e-07 - auc_1: 0.5000 - accuracy: 0.9314
+ 5376/20558 [======>.......................] - ETA: 0s - loss: 0.1480 - recall_1: 1.0000 - precision_1: 0.9317 - kullback_leibler_divergence: -1.1003e-07 - auc_1: 0.5000 - accuracy: 0.9317
+ 6656/20558 [========>.....................] - ETA: 0s - loss: 0.1459 - recall_1: 1.0000 - precision_1: 0.9334 - kullback_leibler_divergence: -1.0728e-07 - auc_1: 0.5000 - accuracy: 0.9334
+ 7936/20558 [==========>...................] - ETA: 0s - loss: 0.1443 - recall_1: 1.0000 - precision_1: 0.9347 - kullback_leibler_divergence: -1.0521e-07 - auc_1: 0.5000 - accuracy: 0.9347
+ 9216/20558 [============>.................] - ETA: 0s - loss: 0.1452 - recall_1: 1.0000 - precision_1: 0.9340 - kullback_leibler_divergence: -1.0633e-07 - auc_1: 0.5000 - accuracy: 0.9340
+10496/20558 [==============>...............] - ETA: 0s - loss: 0.1428 - recall_1: 1.0000 - precision_1: 0.9359 - kullback_leibler_divergence: -1.0335e-07 - auc_1: 0.5000 - accuracy: 0.9359
+11776/20558 [================>.............] - ETA: 0s - loss: 0.1434 - recall_1: 1.0000 - precision_1: 0.9355 - kullback_leibler_divergence: -1.0402e-07 - auc_1: 0.5000 - accuracy: 0.9355
+13056/20558 [==================>...........] - ETA: 0s - loss: 0.1423 - recall_1: 1.0000 - precision_1: 0.9363 - kullback_leibler_divergence: -1.0271e-07 - auc_1: 0.5000 - accuracy: 0.9363
+14336/20558 [===================>..........] - ETA: 0s - loss: 0.1425 - recall_1: 1.0000 - precision_1: 0.9362 - kullback_leibler_divergence: -1.0287e-07 - auc_1: 0.5000 - accuracy: 0.9362
+15616/20558 [=====================>........] - ETA: 0s - loss: 0.1432 - recall_1: 1.0000 - precision_1: 0.9356 - kullback_leibler_divergence: -1.0383e-07 - auc_1: 0.5000 - accuracy: 0.9356
+16896/20558 [=======================>......] - ETA: 0s - loss: 0.1429 - recall_1: 1.0000 - precision_1: 0.9358 - kullback_leibler_divergence: -1.0341e-07 - auc_1: 0.5000 - accuracy: 0.9358
+18176/20558 [=========================>....] - ETA: 0s - loss: 0.1429 - recall_1: 1.0000 - precision_1: 0.9358 - kullback_leibler_divergence: -1.0340e-07 - auc_1: 0.5000 - accuracy: 0.9358
+19456/20558 [===========================>..] - ETA: 0s - loss: 0.1423 - recall_1: 1.0000 - precision_1: 0.9363 - kullback_leibler_divergence: -1.0264e-07 - auc_1: 0.5000 - accuracy: 0.9363
+20558/20558 [==============================] - 1s 42us/step - loss: 0.1421 - recall_1: 1.0000 - precision_1: 0.9365 - kullback_leibler_divergence: -1.0239e-07 - auc_1: 0.5000 - accuracy: 0.9365
+
+   32/20558 [..............................] - ETA: 1:01
+  320/20558 [..............................] - ETA: 9s  
+  608/20558 [..............................] - ETA: 6s
+  896/20558 [>.............................] - ETA: 5s
+ 1184/20558 [>.............................] - ETA: 5s
+ 1472/20558 [=>............................] - ETA: 4s
+ 1728/20558 [=>............................] - ETA: 4s
+ 2016/20558 [=>............................] - ETA: 4s
+ 2304/20558 [==>...........................] - ETA: 4s
+ 2624/20558 [==>...........................] - ETA: 3s
+ 2912/20558 [===>..........................] - ETA: 3s
+ 3168/20558 [===>..........................] - ETA: 3s
+ 3456/20558 [====>.........................] - ETA: 3s
+ 3744/20558 [====>.........................] - ETA: 3s
+ 4032/20558 [====>.........................] - ETA: 3s
+ 4288/20558 [=====>........................] - ETA: 3s
+ 4576/20558 [=====>........................] - ETA: 3s
+ 4864/20558 [======>.......................] - ETA: 3s
+ 5152/20558 [======>.......................] - ETA: 3s
+ 5440/20558 [======>.......................] - ETA: 3s
+ 5760/20558 [=======>......................] - ETA: 2s
+ 6048/20558 [=======>......................] - ETA: 2s
+ 6368/20558 [========>.....................] - ETA: 2s
+ 6656/20558 [========>.....................] - ETA: 2s
+ 6944/20558 [=========>....................] - ETA: 2s
+ 7232/20558 [=========>....................] - ETA: 2s
+ 7520/20558 [=========>....................] - ETA: 2s
+ 7808/20558 [==========>...................] - ETA: 2s
+ 8096/20558 [==========>...................] - ETA: 2s
+ 8384/20558 [===========>..................] - ETA: 2s
+ 8672/20558 [===========>..................] - ETA: 2s
+ 8960/20558 [============>.................] - ETA: 2s
+ 9280/20558 [============>.................] - ETA: 2s
+ 9568/20558 [============>.................] - ETA: 2s
+ 9888/20558 [=============>................] - ETA: 2s
+10208/20558 [=============>................] - ETA: 1s
+10560/20558 [==============>...............] - ETA: 1s
+11008/20558 [===============>..............] - ETA: 1s
+11488/20558 [===============>..............] - ETA: 1s
+11840/20558 [================>.............] - ETA: 1s
+12128/20558 [================>.............] - ETA: 1s
+12448/20558 [=================>............] - ETA: 1s
+12768/20558 [=================>............] - ETA: 1s
+13088/20558 [==================>...........] - ETA: 1s
+13376/20558 [==================>...........] - ETA: 1s
+13664/20558 [==================>...........] - ETA: 1s
+13952/20558 [===================>..........] - ETA: 1s
+14240/20558 [===================>..........] - ETA: 1s
+14496/20558 [====================>.........] - ETA: 1s
+14784/20558 [====================>.........] - ETA: 1s
+15104/20558 [=====================>........] - ETA: 0s
+15392/20558 [=====================>........] - ETA: 0s
+15680/20558 [=====================>........] - ETA: 0s
+16000/20558 [======================>.......] - ETA: 0s
+16288/20558 [======================>.......] - ETA: 0s
+16608/20558 [=======================>......] - ETA: 0s
+16896/20558 [=======================>......] - ETA: 0s
+17184/20558 [========================>.....] - ETA: 0s
+17472/20558 [========================>.....] - ETA: 0s
+17760/20558 [========================>.....] - ETA: 0s
+18048/20558 [=========================>....] - ETA: 0s
+18368/20558 [=========================>....] - ETA: 0s
+18656/20558 [==========================>...] - ETA: 0s
+18944/20558 [==========================>...] - ETA: 0s
+19264/20558 [===========================>..] - ETA: 0s
+19552/20558 [===========================>..] - ETA: 0s
+19840/20558 [===========================>..] - ETA: 0s
+20096/20558 [============================>.] - ETA: 0s
+20384/20558 [============================>.] - ETA: 0s
+20558/20558 [==============================] - 4s 182us/step
+
+  32/3628 [..............................] - ETA: 0s
+ 320/3628 [=>............................] - ETA: 0s
+ 608/3628 [====>.........................] - ETA: 0s
+ 896/3628 [======>.......................] - ETA: 0s
+1216/3628 [=========>....................] - ETA: 0s
+1568/3628 [===========>..................] - ETA: 0s
+1920/3628 [==============>...............] - ETA: 0s
+2336/3628 [==================>...........] - ETA: 0s
+2688/3628 [=====================>........] - ETA: 0s
+3040/3628 [========================>.....] - ETA: 0s
+3392/3628 [===========================>..] - ETA: 0s
+3628/3628 [==============================] - 1s 159us/step
+Evaluation Scores for Training Data 
+[0.14210053503524933, 1.0, 0.9364724159240723, -1.0239430281444584e-07, 0.5, 0.9364724159240723]
+Evaluation Scores for Testing Data 
+[0.141935741773251, 1.0, 0.9366042017936707, -1.0218194290700922e-07, 0.5, 0.9366042017936707]
