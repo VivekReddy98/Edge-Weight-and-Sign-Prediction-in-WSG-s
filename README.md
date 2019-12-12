@@ -3,7 +3,7 @@ Graph Data Mining Capstone Project
 
 1) Edge Weight and Sign Prediction using Node Embeddings generated from a Weighted Signed Graph Convolutional Network.
 2) A MLP is used for Weight ans Sign Prediction. 
-3) WSGN was written using Tensorflow Low-Level API and is compatible with v1.1.5
+3) WSGN was written using Tensorflow Low-Level API and is vectorized and works for any arbitrary batch size as long as the NxN Matrix fits in the memory (#N : Number of Nodes)
 4) MLP's were written in Keras.
 5) Modified Signed Spectral Embeddings are given as the initial embeddings for WSGCN.
 
