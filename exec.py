@@ -10,8 +10,8 @@ tf.get_logger().setLevel('ERROR')
 #tf.disable_eager_execution()
 import csv, h5py
 
-epochs = 3
 ''' Define all the hyper parameters here'''
+epochs = 3
 batch_size = 512
 loss_epochs = 10
 path = os.path.join("datasets", "original", "soc-sign-bitcoinotc.csv")
@@ -28,9 +28,10 @@ print(path.split(os.path.sep)[-1].split(".")[0])
 global sess
 global graph
 
-loss_list = []
-
-sess = tf.Session()
+## Required When Multiple Precesses are running on GPU
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
 #sess = tf.keras.backend.get_session()
 graph = tf.compat.v1.get_default_graph()
 
@@ -43,6 +44,7 @@ itr = pairGenerator(batch_size=batch_size).genPairs(G)
 
 
 with sess.as_default():
+
 	#https://github.com/tensorflow/cleverhans/issues/1117
 	#https://github.com/horovod/horovod/issues/511
 	#https://github.com/keras-team/keras/issues/13550
@@ -82,11 +84,12 @@ with sess.as_default():
 
 	''' Only Start and End Indexes are Required to run get zUB'''
 	Final_Layer_Embeddings = sess.run(zUB, feed_dict={modelfwd.start: np.array(0).astype(np.int32),
-													modelfwd.end: np.array(G.N).astype(np.int32)})
+													modelfwd.end: np.array(G.N+1).astype(np.int32)})
 	print(np.sum(Final_Layer_Embeddings), Final_Layer_Embeddings.shape)
 
 	print("Completed the forward pass ")
 	glob_loss_list = []
+	loss_list = []
 
 	for j in range(0, epochs):
 	
@@ -117,7 +120,7 @@ with sess.as_default():
 
 		''' Running zUB on updated weights '''
 		Final_Layer_Embeddings = sess.run(zUB, feed_dict={modelfwd.start: np.array(0).astype(np.int32),
-														modelfwd.end: np.array(G.N).astype(np.int32)})
+														modelfwd.end: np.array(G.N+1).astype(np.int32)})
 		print(np.sum(Final_Layer_Embeddings), Final_Layer_Embeddings.shape)
 
 		print("Completed the forward pass for epoch {}".format(j))
