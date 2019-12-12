@@ -26,14 +26,14 @@ https://gist.github.com/Brainiarc7/6d6c3f23ea057775b72c52817759b25c
 1) Trained Node Embeddings are found in embeddings folder. Embeddings_[dataset name][numLayers].h5
 2) Training History, Results, Loss computed for WSGCN training is found in the results folder.
 3) Look into src folder for source code. 
-4) exec.py is the entry point to run the WSGCN, edit the specified column for hhyperparameters.
-5) metrics.py is the entry point to run the MLP's
+4) exec.py is the entry point to run the WSGCN, edit the specified column for hyperparameters.
+5) metrics.py is the entry point to run the MLP's.
 
 ## Source Code Walkthrough:
 1) generatorUtils.py: Generator utils to clean the dataset, statified splitting, Generate SSE and generate node pairs for the objective function.
 2) weightsSGCN.py: The WSGCN weight initialization procedure is handled by this file. (Glorot initialization is used by default).
 3) sgcnLayers.py: Completely Vectorized, Layer Definitions. Works for any arbitrary batch size. 
-4) sgcn.py: Stacking Layers for forward pass, BackPropoagation and all the required types of losses defined. 
+4) sgcn.py: Stacking Layers for forward pass, BackPropoagation and all the required types of losses defined. Placeholder Initilzation for dynamically changing inputs.
 
 
 
